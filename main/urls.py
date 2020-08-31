@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path #url()
 from . import views
 
 
@@ -9,4 +9,6 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("logout/", views.logout_request, name="logout"),
     path("login/", views.login_request, name="login"),
+    path("posts/", views.post_list_view),
+    path("posts/<int:post_id>", views.post_view)
 ]

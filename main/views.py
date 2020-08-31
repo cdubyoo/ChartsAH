@@ -1,15 +1,51 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Post
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
 from .forms import NewUserForm
 # Create your views here.
-def homepage(request):
-     return render(request = request,
-                  template_name='main/home.html',
-                  context = {"Posts":Post.objects.all})
+def homepage(request, *args, **kwargs):
+     return render(request,
+                  'main/home.html',
+                  context = {}, status=200)
+
+
+def post_list_view(request, *args, **kwargs):
+     """
+     REST API VIEW
+     CONSUME BY JS OR SWIFT OR JAVA OR IOS OR ANDROID
+     return json data
+     """
+     qs = Post.objects.all()
+     posts_list = [{"id": x.id, "content": x.content} for x in qs]
+     data = {
+          "response": posts_list
+     }
+     return JsonResponse(data)
+
+
+def post_view(request, post_id, *args, **kwargs):
+     """
+     REST API VIEW
+     CONSUME BY JS OR SWIFT OR JAVA OR IOS OR ANDROID
+     return json data
+     """
+     data = {
+          "id":post_id,
+          # "image_path": obj.image.url
+     }
+     status = 200
+     try:
+          obj = Post.objects.get(id=post_id)
+          data['content'] = obj.content
+     except:
+          data['message'] = "Not Found"
+          status = 404
+
+     
+     return JsonResponse(data, status=status) #json.dumps content_type = 'application/json'
 
 # register
 def register(request):

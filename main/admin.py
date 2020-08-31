@@ -5,8 +5,9 @@ from django.db import models
 # Register your models here.
 class PostAdmin(admin.ModelAdmin):
     fieldsets = [
-        ("Title/date", {'fields': ["post_title", "post_published"]}),
-        ("Content", {"fields": ["post_content"]})
+        ("Title/date", {'fields': ["title", "published"]}),
+        ("Chart", {"fields": ["image"]}),
+        ("Content", {"fields": ["content"]})
     ]
 
     formfield_overrides= {
