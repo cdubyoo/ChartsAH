@@ -20,8 +20,6 @@ tweets
 
 following / followers
 
-
-
-dm
+inbox/messaging
 
 explore searching by tickers

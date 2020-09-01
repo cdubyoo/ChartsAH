@@ -20,10 +20,15 @@ def homepage(request, *args, **kwargs):
 
 # creating posts
 def post_create_view(request, *args, **kwargs):
+     user = request.user
+     if not request.user.is_authenticated:
+          user = None
+          return redirect('../login')
      form = PostForm(request.POST or None) #send data to form
      next_url = request.POST.get("next") or None #getting url from initial page
      if form.is_valid():
           obj = form.save(commit=False)
+          obj.user = user
           obj.save() # save to data base if valid 
           if next_url != None and is_safe_url(next_url, ALLOWED_HOSTS):
                return redirect(next_url) # redirect to initial page after posting
@@ -36,7 +41,6 @@ def post_list_view(request, *args, **kwargs):
      qs = Post.objects.all()
      posts_list = [{"id": x.id, "content": x.content, "votes": random.randint(0, 100)} for x in qs]
      data = {
-          "isUser": False,
           "response": posts_list
      }
      return JsonResponse(data)

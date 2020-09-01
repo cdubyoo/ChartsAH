@@ -66,8 +66,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tinymce',
-    'main.apps.MainConfig'
+    'main.apps.MainConfig',
+    'profiles.apps.ProfilesConfig'
 ]
 
 MIDDLEWARE = [

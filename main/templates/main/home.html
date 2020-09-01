@@ -28,7 +28,12 @@
 
 <script>
   
- 
+ // {{ post.user }} add this in with each appended post to show user
+ // or add in post.user into xhr request and load it at once with the content
+  
+  
+  
+  
   const postsEle = document.getElementById("posts") // selecting the element from html
   
 
@@ -64,7 +69,7 @@
   // handling the upvote event
   function handleUpvoted(post_id, currentVotes) {
     console.log(post_id, currentVotes)
-    currentVotes++ // increase vote count??
+    // currentVotes++ // increase vote count?? add later
     return
   }
 
