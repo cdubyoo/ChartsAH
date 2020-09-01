@@ -1,40 +1,51 @@
+import random
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse, Http404
 from .models import Post
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
-from .forms import NewUserForm
+from .forms import NewUserForm, PostForm
+from django.utils.http import is_safe_url
+
+ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # Create your views here.
+
+#home page
 def homepage(request, *args, **kwargs):
      return render(request,
                   'main/home.html',
                   context = {}, status=200)
 
+# creating posts
+def post_create_view(request, *args, **kwargs):
+     form = PostForm(request.POST or None) #send data to form
+     next_url = request.POST.get("next") or None #getting url from initial page
+     if form.is_valid():
+          obj = form.save(commit=False)
+          obj.save() # save to data base if valid 
+          if next_url != None and is_safe_url(next_url, ALLOWED_HOSTS):
+               return redirect(next_url) # redirect to initial page after posting
+          form = PostForm()
+     return render(request, 'main/includes/form.html', context = {"form": form}) # render form if invalid
 
+# feed
 def post_list_view(request, *args, **kwargs):
-     """
-     REST API VIEW
-     CONSUME BY JS OR SWIFT OR JAVA OR IOS OR ANDROID
-     return json data
-     """
+    
      qs = Post.objects.all()
-     posts_list = [{"id": x.id, "content": x.content} for x in qs]
+     posts_list = [{"id": x.id, "content": x.content, "votes": random.randint(0, 100)} for x in qs]
      data = {
+          "isUser": False,
           "response": posts_list
      }
      return JsonResponse(data)
 
 
 def post_view(request, post_id, *args, **kwargs):
-     """
-     REST API VIEW
-     CONSUME BY JS OR SWIFT OR JAVA OR IOS OR ANDROID
-     return json data
-     """
+     
      data = {
           "id":post_id,
-          # "image_path": obj.image.url
      }
      status = 200
      try:
@@ -45,7 +56,7 @@ def post_view(request, post_id, *args, **kwargs):
           status = 404
 
      
-     return JsonResponse(data, status=status) #json.dumps content_type = 'application/json'
+     return JsonResponse(data, status=status)
 
 # register
 def register(request):

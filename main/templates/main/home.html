@@ -1,18 +1,89 @@
 {% extends 'main/header.html' %}
 {% block head_title %}Home{% endblock head_title %}
 {% block content %}
-<div class="row">
-    {% for p in Posts %}
-        <div class="col s12 m6">
-          <div class="card blue-grey darken-1">
-            <div class="card-content white-text">
-              <span class="card-title">{{p.title}}</span>
-              <p>{{p.published}}</p>
-              <p>{{p.content}}</p>
-              <p>{{p.image}}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    {% endfor %}
+<div class='row text-center'>
+  <div class='col'>
+      <h1>Trader Feed</h1>
+  </div>
+</div>
+
+
+
+<div class='row mb-3'>
+  <div class='col-md-4 mx-auto col-10'>
+      <form class='form' id=post-create-form method='POST' action='/create-post/' >
+          {% csrf_token %}
+          <input type='hidden' value='/' name='next'/> 
+          <textarea class='form-control' name='content' placeholder='Insert trade analysis...'></textarea>
+          <button type='submit' class='btn btn-primary'>Post</button>
+      </form>
+  </div>
+</div>
+
+
+<div class='row' id="posts">
+  Loading... Please wait.
+</div>
+
+
+<script>
+  
+ 
+  const postsEle = document.getElementById("posts") // selecting the element from html
+  
+
+  function loadPosts(postsElement) {
+    // setting up variables for request
+    const xhr = new XMLHttpRequest() 
+    const method = 'GET'
+    const url = "/posts"
+    const responseType = "json"
+
+    xhr.responseType = responseType // letting xhr request know its getting json data
+    xhr.open(method, url) // open up the request with the url
+    xhr.onload = function() {
+      const serverResponse = xhr.response
+      var listedItems = serverResponse.response // loop through this array and append it into the posts placeholder
+      var finalPostStr = ""
+      var i = 0
+      for (i=0; i<listedItems.length; i++ ) {
+        var postObj = listedItems[i]
+        var currentItem = formatPostElement(postObj)
+          finalPostStr += currentItem
+      }
+      postsElement.innerHTML = finalPostStr
+      // log out the response from the request 
+    }
+    xhr.send() // trigger the response
+  }
+
+  loadPosts(postsEle) // run it
+ 
+
+
+  // handling the upvote event
+  function handleUpvoted(post_id, currentVotes) {
+    console.log(post_id, currentVotes)
+    currentVotes++ // increase vote count??
+    return
+  }
+
+  // upvote button
+  function upvoteBtn(post) {
+    return "<button class='btn btn-success btn-sm' onclick=handleUpvoted(" + post.id + "," + post.votes + ")>" + post.votes + " Upvotes</button>"
+  }
+
+
+  // formatting
+  function formatPostElement(post){
+    var formattedPost = "<div class='col-12 mx-auto border rounded py-3 mb-4 post' id='post-" + post.id 
+    + "'><p>"+post.content+
+      "</p></div class='btn-group'>" + upvoteBtn(post) +
+      "</div></div>"
+    return formattedPost
+
+  }
+  
+
+</script>
 {% endblock %}

@@ -1,4 +1,4 @@
-1. users 
+users 
     - register
     - login
     - logout
@@ -7,20 +7,21 @@
         - bio/text
         - follow button
     - feed
-        - user's feed only?
-        - user + who they follow?
+        - user specific feed 
+        - user + who they follow
 
-2. tweets
+tweets
     - creating
         - text
         - image -> media storage server 
     - delete
     - retweeting?
-    - upvote/downvote
+    - upvote/downvote?
 
-3. following / followers
+following / followers
 
-others
-- notifications
-- dm
-- explore finding tickers
+
+
+dm
+
+explore searching by tickers

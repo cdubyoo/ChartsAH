@@ -2,7 +2,6 @@ from django.db import models
 from datetime import datetime
 # Create your models here.
 class Post(models.Model):
-    # id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
     content = models.TextField(blank=True, null=True)
     published = models.DateTimeField('date published', default=datetime.now)
