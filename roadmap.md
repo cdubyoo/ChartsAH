@@ -10,13 +10,16 @@ users
         - user specific feed 
         - user + who they follow
 
-tweets
+posts
     - creating
         - text
-        - image -> media storage server 
+        - image -> media storage server - bucket?
+    - attach user
+    - comments    
     - delete
     - retweeting?
     - upvote/downvote?
+    
 
 following / followers
 

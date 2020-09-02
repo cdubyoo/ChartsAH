@@ -1,14 +1,15 @@
 {% extends 'main/header.html' %}
-
+{% load crispy_forms_tags %}
 {% block content %}
     <br>
+    {% include "main/includes/messages.html" %}
     <form method="POST">
         {% csrf_token %}
-        {{form.as_p}}
-
+        {{form |crispy}}
+        <br>
         <button style="background-color:rgba(32, 214, 93, 0.596); color:black" class="btn btn-outline-info" type="submit">Login</button>
     </form>
-
+    
     If you do not have an account yet, <a href="/register" target="blank"><strong>register</strong></a> instead.
 
 {% endblock %}

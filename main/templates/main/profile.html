@@ -1,0 +1,39 @@
+{% extends 'main/header.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %} {{ user.username }} {% endblock head_title %}
+{% block head %}
+{% endblock %}
+
+<div class="container">
+{% block content %}
+    <img
+    class="img-thumbnail"
+    style="width: 240px; height: 240px;"
+    src="{{ user.profile.image.url }}">
+    
+    <p><strong>{{ user.username }}</strong></P>
+    <p>{{ profile.bio }}</P>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Profile Info</legend>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+
+            {{u_form|crispy}}
+            <br>
+            {{p_form|crispy}}
+            </fieldset> 
+            <button style="background-color:rgba(32, 214, 93, 0.596); color:black" class="btn btn-outline-info" type="submit">Update</button>
+        </form>
+        
+</div>
+{% endblock %}

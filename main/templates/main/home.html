@@ -1,6 +1,8 @@
 {% extends 'main/header.html' %}
 {% block head_title %}Home{% endblock head_title %}
+
 {% block content %}
+{% include "main/includes/messages.html" %}
 <div class='row text-center'>
   <div class='col'>
       <h1>Trader Feed</h1>
@@ -19,6 +21,7 @@
       </form>
   </div>
 </div>
+
 
 
 <div class='row' id="posts">
