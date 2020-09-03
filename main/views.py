@@ -10,59 +10,69 @@ from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm
 from django.utils.http import is_safe_url
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
-# Create your views here.
+# function based views, that handle the logic for the route and render the template.
+# class based views handle backend logic using generic views and inherit from mixins
 
 #home page
 def homepage(request, *args, **kwargs):
+     # render in the 'posts' with all the objects as post, to call it on the template
+     context = {
+          'posts': Post.objects.all() # calling all objects from the Post model
+     }
      return render(request,
                   'main/home.html',
-                  context = {}, status=200)
+                  context)
 
 # creating posts
-def post_create_view(request, *args, **kwargs):
-     user = request.user
-     if not request.user.is_authenticated:
-          user = None
-          return redirect('../login')
-     form = PostForm(request.POST or None) #send data to form
-     next_url = request.POST.get("next") or None #getting url from initial page
-     if form.is_valid():
-          obj = form.save(commit=False)
-          obj.user = user
-          obj.save() # save to data base if valid 
-          if next_url != None and is_safe_url(next_url, ALLOWED_HOSTS):
-               return redirect(next_url) # redirect to initial page after posting
-          form = PostForm()
-     return render(request, 'main/includes/form.html', context = {"form": form}) # render form if invalid
+class post_create_view(LoginRequiredMixin, CreateView):
+     model = Post
+     fields = ['content', 'image']
+     #set user to logged in user then validate the form
+     def form_valid(self, form):
+          form.instance.user = self.request.user
+          return super().form_valid(form)
+
+# update view
+class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+     model = Post
+     fields = ['content', 'image']
+     #set user to logged in user then validate the form
+     def form_valid(self, form):
+          form.instance.user = self.request.user
+          return super().form_valid(form)
+
+     def test_func(self):
+          post = self.get_object() # get the post 
+          if self.request.user == post.user:
+               return True
+          return False
 
 # feed
-def post_list_view(request, *args, **kwargs):
+class post_list_view(ListView):
     
-     qs = Post.objects.all()
-     posts_list = [{"id": x.id, "content": x.content, "votes": random.randint(0, 100)} for x in qs]
-     data = {
-          "response": posts_list
-     }
-     return JsonResponse(data)
+     model = Post
+     template_name = 'main/home.html'
+     context_object_name = 'posts'
+     ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
 
-
-def post_view(request, post_id, *args, **kwargs):
+#individual post
+class post_detail_view(DetailView):
+     model = Post
      
-     data = {
-          "id":post_id,
-     }
-     status = 200
-     try:
-          obj = Post.objects.get(id=post_id)
-          data['content'] = obj.content
-     except:
-          data['message'] = "Not Found"
-          status = 404
 
-     
-     return JsonResponse(data, status=status)
+class post_delete_view(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+     model = Post
+     success_url = '/' #redirect to home if delete success
+     def test_func(self):
+          post = self.get_object() # get the post 
+          if self.request.user == post.user:
+               return True
+          return False
+
 
 # register
 def register(request):
@@ -74,7 +84,7 @@ def register(request):
                messages.success(request, f"New user created: {username}")
                login(request, user)
                messages.info(request, f"Welcome, {username}.")
-               return redirect("main:homepage")
+               return redirect("main:home")
 
           else:
 
@@ -91,7 +101,7 @@ def register(request):
 def logout_request(request):
      logout(request)
      messages.info(request, "You have been logged out.")
-     return redirect("main:homepage")
+     return redirect("main:home")
 
 # log in
 def login_request(request):

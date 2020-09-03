@@ -10,10 +10,10 @@ users
         - user specific feed 
         - user + who they follow
 
-posts
+posts - CRUD
     - creating
         - text
-        - image -> media storage server - bucket?
+        - image -> media storage server - bucket? s3?
     - attach user
     - comments    
     - delete
