@@ -13,9 +13,9 @@
       <div class="col-md-3">
           <div class="card">
               <div class="card-body">
-                  <div class="h5"><img class="thumbnail" width="45" height="45" src="{{ profile.user.profile.image.url }}" alt="">Image placeholder</div>
-                  <div class="h7">Username placeholder {{ profile.user }}</div>
-                  <div class="h7">bio place holder</div>
+                  <div class="h5"><img class="thumbnail" width="45" height="45" src="{{ user.profile.image.url  }}" alt=""></div>
+                  <div class="h7"><strong>{{ user.username }}</strong></div>
+                  <div class="h7">{{ user.profile.bio }}</div>
               </div>
               <ul class="list-group list-group-flush">
                   <li class="list-group-item">
