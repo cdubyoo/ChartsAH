@@ -1,13 +1,11 @@
 import random
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse, Http404
 from .models import Post, Profile
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
 from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm
-from django.utils.http import is_safe_url
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -58,6 +56,7 @@ class post_list_view(ListView):
      template_name = 'main/home.html'
      context_object_name = 'posts'
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
+     paginate_by = 5 #sets pagination per page
 
 #individual post
 class post_detail_view(DetailView):
@@ -72,6 +71,24 @@ class post_delete_view(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
           if self.request.user == post.user:
                return True
           return False
+
+
+class user_posts(LoginRequiredMixin, ListView):
+    
+     model = Post
+     template_name = 'main/user_posts.html'
+     context_object_name = 'posts'
+     paginate_by = 5 #sets pagination per page
+
+     def get_queryset(self):
+          user = get_object_or_404(User, username =self.kwargs.get('username'))
+          return Post.objects.filter(user=user).order_by('-date_posted')
+
+     def get_context_data(self, **kwargs):
+          user = get_object_or_404(User, username =self.kwargs.get('username'))
+          context = super(user_posts, self).get_context_data(**kwargs)
+          context['user_profile'] = Profile.objects.filter(user=user)
+          return context
 
 
 # register

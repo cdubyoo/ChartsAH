@@ -4,16 +4,17 @@
 {% include "main/includes/messages.html" %}
 <div class='row text-center'>
   <div class='col'>
-      <h1>Trader Feed</h1>
+      <h3>Trader Feed</h3>
   </div>
 </div>
 
 <div class="container gedf-wrapper">
+    {% if user.is_authenticated %}
   <div class="row">
       <div class="col-md-3">
           <div class="card">
               <div class="card-body">
-                  <div class="h5"><img class="thumbnail" width="45" height="45" src="{{ user.profile.image.url  }}" alt=""></div>
+                  <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ user.profile.image.url  }}" alt=""></div>
                   <div class="h7"><strong>{{ user.username }}</strong></div>
                   <div class="h7">{{ user.profile.bio }}</div>
               </div>
@@ -34,12 +35,22 @@
           <!--- \\\\\\\Post-->
           <div class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
               <div class="card-header">
-                
                           <a  href="post/create/" style= "color:white ">Share a Trade</a>
               </div>
           </div>
+          {% else %}
+          <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="h7"><strong>Please sign in to create posts and view profiles.</strong></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 gedf-main" >
+                <!--- \\\\\\\Post-->
+          {% endif %}
           <br>
-        
 {% for post in posts %}
           <!--- \\\\\\\Post-->
           <div class="card gedf-card">
@@ -51,7 +62,7 @@
                           </div>
                           <div class="ml-2">
                               <div class="h5 m-0">
-                                <a class="mr-2" href="#">{{ post.user }}</a>
+                                <a class="mr-2" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
                               </div>
                               <div class="h7 text-muted"><a href ="{% url 'main:post-detail' post.id %}">{{ post.date_posted|date:"F d, Y" }}</a></div>
                           </div>
@@ -70,13 +81,11 @@
                           </div-->
                       </div>
                   </div>
-
               </div>
               <div class="card-body">
                   <a class="card-link" href="#">
                       <!-- h5 class="card-title"> Title </h5 -->
                   </a>
-
                   <p class="card-text">
                     {{ post.content }}
                   </p>
@@ -88,12 +97,31 @@
           </div>
           <br>
           {% endfor %}
+          {% if is_paginated %}
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %} <!-- loop the pages for num as current page-->
+                        <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+                    {% endif %}
+                    </ul>
+                </nav>
+          {% endif %}
           <!-- Post /////-->
-        
-
-
       </div>
-      
       <div class="col-md-3">
           <div class="card gedf-card">
               <div class="card-body">
@@ -117,8 +145,4 @@
       </div>
   </div>
 </div>
-
-
-
-
 {% endblock %}
