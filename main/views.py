@@ -1,4 +1,3 @@
-import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from .models import Post, Profile
@@ -80,10 +79,12 @@ class user_posts(LoginRequiredMixin, ListView):
      context_object_name = 'posts'
      paginate_by = 5 #sets pagination per page
 
+     #get data from model and filter by user
      def get_queryset(self):
           user = get_object_or_404(User, username =self.kwargs.get('username'))
           return Post.objects.filter(user=user).order_by('-date_posted')
 
+     #override and get data from another model
      def get_context_data(self, **kwargs):
           user = get_object_or_404(User, username =self.kwargs.get('username'))
           context = super(user_posts, self).get_context_data(**kwargs)
