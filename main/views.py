@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from .models import Post, Profile
+from .models import Post, Profile, Follow
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
@@ -79,6 +79,9 @@ class user_posts(LoginRequiredMixin, ListView):
      context_object_name = 'posts'
      paginate_by = 5 #sets pagination per page
 
+     def displayed_user(self):
+        return get_object_or_404(User, username=self.kwargs.get('username')) # user on display
+
      #get data from model and filter by user
      def get_queryset(self):
           user = get_object_or_404(User, username =self.kwargs.get('username'))
@@ -90,6 +93,20 @@ class user_posts(LoginRequiredMixin, ListView):
           context = super(user_posts, self).get_context_data(**kwargs)
           context['user_profile'] = Profile.objects.filter(user=user)
           return context
+
+     #post request, done as def post because its inside a class
+     def post(self, request, *args, **kwargs):
+          follows_between = Follow.objects.filter(user = request.user, to_follow = self.displayed_user()) # filter out current user and displayed user as a variable
+          if 'follow' in request.POST: # calling the post request from html name=follow
+               new_relation = Follow(user=request.user, to_follow=self.displayed_user()) #set new relation with request user and displayed user using Follow model
+               if follows_between.count() == 0: # if there is no relation between the 2, then save new relation
+                    new_relation.save() 
+
+          return self.get(self, request, *args, **kwargs)
+     
+          
+
+     
 
 
 # register
@@ -163,6 +180,8 @@ def profile(request):
      }
      
      return render(request, 'main/profile.html', context)
+
+
 
 
 

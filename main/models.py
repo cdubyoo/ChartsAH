@@ -24,13 +24,29 @@ class Profile(models.Model):
     
 
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f"{self.user.username}'s Profile"
+
+
 
 class Follow(models.Model):
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE) #tie follows to one user
-    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
-    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    to_follow = models.ForeignKey(User, related_name='to_follow',  on_delete=models.CASCADE)
     
-    class Meta:
-        unique_together = ('follower', 'following')
 
+
+'''
+
+    @classmethod
+    def follow(cls, user, another_user):
+        obj, created = cls.objects.get_or_create(user=user)
+        obj.user.add(new_friend)
+    @classmethod
+    def unfollow(cls, user, another_user):
+        obj, created = cls.objects.get_or_create(user=user)
+        obj.user.remove(another_user)
+      
+
+    def __str__(self):
+        return f"{self.user}'s follower/following"
+
+'''

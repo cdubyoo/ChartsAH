@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 
 app_name = 'main'  
-
+#call upon the function from view and links it to url path
 urlpatterns = [
     path("", post_list_view.as_view(), name="home"),
     path("register/", views.register, name="register"),
@@ -17,6 +17,8 @@ urlpatterns = [
     path("post/<int:pk>/update", post_update_view.as_view(), name='post-update'),
     path("post/<int:pk>/delete", post_delete_view.as_view(), name='post-delete'),
     path("profile/", views.profile, name= "profile"),
-    path("user/<str:username>", user_posts.as_view(), name="user-posts"),
+    path("user/<str:username>", user_posts.as_view(), name="user-posts"), #profile view
+   # path("user/follow/<str:username>", views.follow, name="follow"),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

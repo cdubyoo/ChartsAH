@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Profile
+from .models import Post, Profile, Follow
 
 from django.db import models
 # Register your models here.
@@ -13,5 +13,11 @@ class ProfileAdmin(admin.ModelAdmin):
     class Meta:
         model = Profile
 
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ('user', 'to_follow')
+    class Meta:
+        model = Follow
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Follow, FollowAdmin)

@@ -4,7 +4,7 @@
 {% include "main/includes/messages.html" %}
 <div class='row text-center'>
   <div class='col'>
-      <h3>Trades by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h3>
+      <h3>Trades by {{ view.kwargs.username }}</h3> <!-- ({{ page_obj.paginator.count }})-->
   </div>
 </div>
 
@@ -23,13 +23,31 @@
               <ul class="list-group list-group-flush">
                   <li class="list-group-item">
                       <div class="h6 text-muted">Followers</div>
-                      <div class="h5">5.2342</div>
+                      <div class="h5">0</div>
                   </li>
                   <li class="list-group-item">
                       <div class="h6 text-muted">Following</div>
-                      <div class="h5">6758</div>
+                      <div class="h5">0</div>
                   </li>
                   <li class="list-group-item">Smallcaps</li>
+                  <li class="list-group-item">
+                  {%  if user_profile is not None and user_profile.id != user.id  and user.username != '' %}
+                  <form method="POST">
+                      {% csrf_token %}
+                      <div class="form-group">
+                          <button class="btn btn-sm btn-outline-primary"
+                                  name="follow"
+                                  type="submit">
+                               
+                                   FOLLOW
+                               
+                          </button>
+                        </div>
+                    </form>
+                {% endif %}
+                    </li>
+
+                  <!--a class="btn btn-outline-info" href="{% url 'main:user-posts' view.kwargs.username %}">Follow</a>  pass in the url from views and argument which is username-->
               </ul>
           </div>
       </div>
@@ -87,7 +105,7 @@
                     <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                         <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>    
                     {% endif %}
 
                     {% for num in page_obj.paginator.page_range %}
