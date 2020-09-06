@@ -21,7 +21,14 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')  #add in later
     bio = models.TextField(max_length=1000, blank=True)
-    
+
+    @property
+    def followers(self):
+        return Follow.objects.filter(to_follow=self.user).count()
+
+    @property
+    def following(self):
+        return Follow.objects.filter(user=self.user).count()
 
     def __str__(self):
         return f"{self.user.username}'s Profile"

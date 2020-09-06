@@ -18,20 +18,21 @@
                   <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ profile.image.url }}" alt=""></div>
                   <div class="h7"><strong>{{ profile.user }}</strong></div>
                   <div class="h7">{{ profile.bio }}</div>
-                  {% endfor %}
+                  
               </div>
               <ul class="list-group list-group-flush">
                   <li class="list-group-item">
                       <div class="h6 text-muted">Followers</div>
-                      <div class="h5">0</div>
+                      <div class="h5">{{ profile.followers }}</div>
                   </li>
                   <li class="list-group-item">
                       <div class="h6 text-muted">Following</div>
-                      <div class="h5">0</div>
+                      <div class="h5">{{ profile.following }}</div>
                   </li>
                   <li class="list-group-item">Smallcaps</li>
                   <li class="list-group-item">
-                  {%  if user_profile is not None and user_profile.id != user.id  and user.username != '' %}
+                    {% endfor %}
+                  <!-- {%  if user_profile is not None and user_profile.id != user.id  and user.username != '' %} -->
                   <form method="POST">
                       {% csrf_token %}
                       <div class="form-group">
