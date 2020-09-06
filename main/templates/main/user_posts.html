@@ -36,11 +36,13 @@
                       {% csrf_token %}
                       <div class="form-group">
                           <button class="btn btn-sm btn-outline-primary"
-                                  name="follow"
+                                  name="{% if followable %}follow{% else %}unfollow{% endif %}"  
                                   type="submit">
-                               
-                                   FOLLOW
-                               
+                                  {% if followable %}
+                                    Follow
+                                  {% else %}
+                                    Unfollow
+                                  {% endif %}
                           </button>
                         </div>
                     </form>

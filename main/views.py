@@ -89,18 +89,31 @@ class user_posts(LoginRequiredMixin, ListView):
 
      #override and get data from another model
      def get_context_data(self, **kwargs):
-          user = get_object_or_404(User, username =self.kwargs.get('username'))
+          displayed_user = get_object_or_404(User, username =self.kwargs.get('username'))
+          current_user = self.request.user
+
+          if current_user.username == '' or current_user is None:
+               followable = False
+          else:
+               followable = (Follow.objects.filter(user=current_user, to_follow=displayed_user).count() == 0)
+
           context = super(user_posts, self).get_context_data(**kwargs)
-          context['user_profile'] = Profile.objects.filter(user=user)
+          context['user_profile'] = Profile.objects.filter(user=displayed_user)
+          context['followable'] = followable
           return context
 
      #post request, done as def post because its inside a class
      def post(self, request, *args, **kwargs):
           follows_between = Follow.objects.filter(user = request.user, to_follow = self.displayed_user()) # filter out current user and displayed user as a variable
           if 'follow' in request.POST: # calling the post request from html name=follow
-               new_relation = Follow(user=request.user, to_follow=self.displayed_user()) #set new relation with request user and displayed user using Follow model
-               if follows_between.count() == 0: # if there is no relation between the 2, then save new relation
+               new_relation = Follow(user=request.user, to_follow=self.displayed_user()) #filter new relation with request user and displayed user using Follow model
+               if follows_between.count() == 0: # if there is no count/relation between the 2, then save new relation
                     new_relation.save() 
+          # doing the reverse for if the post request is from html name=unfollow
+          elif 'unfollow' in request.POST: 
+               new_relation = Follow(user=request.user, to_follow=self.displayed_user()) 
+               if follows_between.count() > 0: # if  there is count/relation between the 2, then delete relation
+                    follows_between.delete() 
 
           return self.get(self, request, *args, **kwargs)
      
