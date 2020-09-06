@@ -32,7 +32,7 @@
                   <li class="list-group-item">Smallcaps</li>
                   <li class="list-group-item">
                     {% endfor %}
-                  <!-- {%  if user_profile is not None and user_profile.id != user.id  and user.username != '' %} -->
+                   {%  if user.username != view.kwargs.username %} 
                   <form method="POST">
                       {% csrf_token %}
                       <div class="form-group">
