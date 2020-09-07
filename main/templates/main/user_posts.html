@@ -70,7 +70,7 @@
                               <div class="h5 m-0">
                                 <a class="mr-2" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
                               </div>
-                              <div class="h7 text-muted"><a href ="{% url 'main:post-detail' post.id %}">{{ post.date_posted|date:"F d, Y" }}</a></div>
+                              <div class="h7 text-muted">{{ post.date_posted|date:"F d, Y" }}</div>
                           </div>
                       </div>
                       <div>
@@ -98,7 +98,7 @@
               </div>
               <div class="card-footer">
                   <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-                  <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>
+                  <a href="{% url 'main:post-detail' post.id %}" class="card-link"><i class="fa fa-comment"></i> Comment</a>
               </div>
           </div>
           <br>

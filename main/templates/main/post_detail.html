@@ -95,6 +95,7 @@
                     <form method="POST">
                         {% csrf_token %}
                         <fieldset class="form-group">
+                            <!-- not planning on using crispy here, its ugly as shit. will bootstrap up the entire comment section, maybe nested?-->
                             {{ form | crispy }}
                         </fieldset>
                         <div class="form-group">
