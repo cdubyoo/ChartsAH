@@ -46,6 +46,6 @@ class Comment(models.Model):
     content = models.TextField(max_length=120)
 
     def __str__(self):
-        return self.comment
+        return self.content
 
 

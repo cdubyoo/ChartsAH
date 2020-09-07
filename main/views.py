@@ -4,6 +4,7 @@ from .models import Post, Profile, Follow, Comment
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
+from django.db.models import Count
 from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -11,7 +12,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
-# function based views, that handle the logic for the route and render the template.
+# function based views handle the logic for the route and render the template.
 # class based views handle backend logic using generic views and inherit from mixins
 
 #home page
@@ -48,16 +49,36 @@ class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                return True
           return False
 
-# feed
+# list of all posts, will be changed to discover page, showcasing top trades of the day instead
 class post_list_view(ListView):
     
      model = Post
      template_name = 'main/home.html'
-     context_object_name = 'posts'
+     context_object_name = 'posts' # this is called from the html as 'for post in posts'
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
      paginate_by = 5 #sets pagination per page
 
-#individual post
+
+# feed of user's followings
+class feed_list_view(LoginRequiredMixin, ListView):
+    
+     model = Post
+     template_name = 'main/feed.html'
+     context_object_name = 'posts' # this is called from the html as 'for post in posts'
+     ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
+     paginate_by = 5 #sets pagination per page
+
+     def get_queryset(self): #function to return a queryset(list of items) 
+          user = self.request.user #specify user as current user who is sending request
+          qs = Follow.objects.filter(user=user) #query set filtering by current user's follow table
+          follows = [user] # store following users as an array as 'follows'
+          for users in qs: #iterate through the query set with a for loop
+               follows.append(users.to_follow) #add to array the users who are in the to_follow list of the user's follow table model
+          return Post.objects.filter(user__in=follows).order_by('-date_posted') 
+          # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
+
+
+#individual post view
 class post_detail_view(DetailView):
      model = Post
      template_name = 'main/post_detail.html'

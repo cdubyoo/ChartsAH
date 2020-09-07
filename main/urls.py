@@ -1,6 +1,6 @@
 from django.urls import path, re_path #url()
 from . import views
-from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, post_delete_view, user_posts)
+from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, post_delete_view, user_posts, feed_list_view)
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -9,6 +9,7 @@ app_name = 'main'
 #call upon the function from view and links it to url path
 urlpatterns = [
     path("", post_list_view.as_view(), name="home"),
+    path("feed/", feed_list_view.as_view(), name="feed"),
     path("register/", views.register, name="register"),
     path("logout/", views.logout_request, name="logout"),
     path("login/", views.login_request, name="login"),
