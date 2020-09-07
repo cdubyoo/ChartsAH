@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from .models import Post, Profile, Follow
+from .models import Post, Profile, Follow, Comment
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
-from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm
+from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -60,7 +60,21 @@ class post_list_view(ListView):
 #individual post
 class post_detail_view(DetailView):
      model = Post
+     template_name = 'main/post_detail.html'
+     context_object_name = 'post'
+
+     def get_context_data(self, **kwargs):
+          context = super().get_context_data(**kwargs)
+          context['form'] = CommentForm(instance=self.request.user)
+          return context
+
      
+     def post(self, request, *args, **kwargs):
+          create_comment = Comment(content=request.POST.get('content'),
+                                   user=self.request.user, post=self.get_object())
+          create_comment.save()
+     
+          return self.get(self, request, *args, **kwargs)
 
 class post_delete_view(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
      model = Post
@@ -92,7 +106,7 @@ class user_posts(LoginRequiredMixin, ListView):
           displayed_user = get_object_or_404(User, username =self.kwargs.get('username'))
           current_user = self.request.user
 
-          if current_user.username == '' or current_user is None:
+          if current_user is None:
                followable = False
           else:
                followable = (Follow.objects.filter(user=current_user, to_follow=displayed_user).count() == 0)

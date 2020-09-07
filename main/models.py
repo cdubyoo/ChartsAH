@@ -24,11 +24,11 @@ class Profile(models.Model):
 
     @property
     def followers(self):
-        return Follow.objects.filter(to_follow=self.user).count()
+        return Follow.objects.filter(to_follow=self.user).count() #count of followers by filtering user and to_follow count
 
     @property
     def following(self):
-        return Follow.objects.filter(user=self.user).count()
+        return Follow.objects.filter(user=self.user).count() #count of followers by filtering user and its user(following) count
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -39,3 +39,13 @@ class Follow(models.Model):
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE) #tie follows to one user
     to_follow = models.ForeignKey(User, related_name='to_follow',  on_delete=models.CASCADE)
     
+class Comment(models.Model):
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE) #tie post model to comments as a one to many relationship using foreign key
+    user = models.ForeignKey(User, related_name='commented_user', on_delete=models.CASCADE) #tie to user posting
+    created_date = models.DateTimeField(default=timezone.now)
+    content = models.TextField(max_length=120)
+
+    def __str__(self):
+        return self.comment
+
+

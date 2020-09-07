@@ -1,4 +1,5 @@
 {% extends 'main/header.html' %}
+{% load crispy_forms_tags %}
 {% block head_title %}Home{% endblock head_title %}
 {% block content %}
 {% include "main/includes/messages.html" %}
@@ -20,11 +21,11 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <div class="h6 text-muted">Followers</div>
-                        <div class="h5">5.2342</div>
+                        <div class="h5">{{ user.profile.followers }}</div>
                     </li>
                     <li class="list-group-item">
                         <div class="h6 text-muted">Following</div>
-                        <div class="h5">6758</div>
+                        <div class="h5">{{ user.profile.following }}</div>
                     </li>
                     <li class="list-group-item">Smallcaps</li>
                 </ul>
@@ -88,6 +89,27 @@
                   <a href="{% url 'main:post-update' object.id %}" class="card-link">Edit</a>
                   <a href="{% url 'main:post-delete' object.id %}" class="card-link" style="color:red">Delete</a>
                   {% endif %}
+              </div>
+              <div class="card-body">
+                <p class="card-text">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            {{ form | crispy }}
+                        </fieldset>
+                        <div class="form-group">
+                            <button class="btn btn-outline-info" type="submit">Comment</button>
+                        </div>
+                    </form>
+                    
+                        {% for comment in post.comments.all %}
+                            {{ comment.user }} - <small class="text-muted">{{ comment.created_date }}</small>
+                            <br>
+                            {{ comment.content }}
+                            <hr>
+                    {%  endfor %}
+                    
+                </p>
               </div>
           </div>
           <br>
