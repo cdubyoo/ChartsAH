@@ -3,17 +3,35 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 
-User = settings.AUTH_USER_MODEL 
+User = settings.AUTH_USER_MODEL #this is the user model which will be used to be called upon to tie relations to
 # Create your models here.
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #many to one relationship where many posts can be tied to one user
     content = models.TextField(blank=True, null=True) # change blank later
     date_posted = models.DateTimeField(default=timezone.now)
-    image = models.FileField(upload_to='images/', blank=True, null=True) #change to required later 
+    image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change to required later 
+    upvotes = models.ManyToManyField(User, related_name='upvotes')
+
+    @property
+    def total_upvotes(self):
+        return self.upvotes.count()
 
     def __str__(self):
         return self.content
     # sets the redirect to the new specific post's absolute path
+
+    '''
+    def save(self, *args, **kwargs): # args and kwargs lets us accept any keywords for our method
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.image.path)
+
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
+    '''
+    
     def get_absolute_url(self):
         return reverse('main:post-detail', kwargs={'pk': self.pk})
 
@@ -29,6 +47,8 @@ class Profile(models.Model):
     @property
     def following(self):
         return Follow.objects.filter(user=self.user).count() #count of followers by filtering user and its user(following) count
+
+
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -47,5 +67,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content
-
-

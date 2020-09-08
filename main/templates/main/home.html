@@ -86,6 +86,11 @@
                   <a class="card-link" href="#">
                       <!-- h5 class="card-title"> Title </h5 -->
                   </a>
+                  {% if post.image %}
+                  <p class="card-text">
+                    <img width=480 height= 400 src="{{ post.image.url }}" alt="">
+                  </p>
+                  {%  endif %}
                   <p class="card-text">
                     {{ post.content }}
                   </p>

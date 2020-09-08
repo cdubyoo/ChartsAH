@@ -4,12 +4,14 @@ from .models import Post, Profile, Follow, Comment
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
-from django.db.models import Count
 from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
@@ -86,8 +88,20 @@ class post_detail_view(DetailView):
 
      def get_context_data(self, **kwargs):
           context = super().get_context_data(**kwargs)
-          context['form'] = CommentForm(instance=self.request.user)
+          context['form'] = CommentForm(instance=self.request.user) 
+
+          current_post = get_object_or_404(Post, id=self.kwargs['pk']) #grab post with id of pk that page is currently on
+          # total_upvotes = current_post.total_upvotes() #calling the total_upvotes function from the model to store the count 
+          context['total_upvotes'] = Post.total_upvotes #call upon the property of total_upvotes from Post model
+          
+          upvoted = False #initial value for upvoted is false 
+          if current_post.upvotes.filter(id=self.request.user.id).exists(): #if relation exists between user and post upvote
+               upvoted = True #then value will be true
+          context['upvoted'] = upvoted #reflect the boolean value into the context dictionary for 'upvoted', which will be called upon in the html
+          
+          
           return context
+
 
      
      def post(self, request, *args, **kwargs):
@@ -155,6 +169,18 @@ class user_posts(LoginRequiredMixin, ListView):
           
 
      
+def upvote_view(request, pk):
+     post = get_object_or_404(Post, id=request.POST.get('post_id')) # look up post table, and grab id from html name=post_id. assign this to 'post' variable
+     upvoted = False #initial value of upvoted is false
+     if post.upvotes.filter(id=request.user.id).exists(): #filtering user and post.upvotes relationship and checking if it exists
+          post.upvotes.remove(request.user) #remove the relation
+          upvoted = False
+     else: #if the above is false
+          post.upvotes.add(request.user) # saving upvote from user. ie: 'chung liked post 28'
+          upvoted = True
+
+     return HttpResponseRedirect(reverse('main:post-detail', args=[str(pk)])) #this will refer to url only by its name attribute with its specific pk
+
 
 
 # register

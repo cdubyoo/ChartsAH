@@ -24,7 +24,7 @@ MAX_LENGTH = 250
 class PostForm(forms.ModelForm):
     class Meta: # declare the form
         model = Post
-        fields = ['content']
+        fields = ['content', 'image']
 # make sure form follows rules
     def clean_content(self):
         content = self.cleaned_data.get("content")

@@ -17,9 +17,7 @@ posts - CRUD
     - attach user
     - comments    
     - delete
-    - retweeting?
-    - upvote/downvote?
-    
+    - upvote/downvote -> this needs to be changed with ajax so page does not reload    
 
 following / followers
 
