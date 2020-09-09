@@ -11,7 +11,9 @@ class Post(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change to required later 
     upvotes = models.ManyToManyField(User, blank=True, related_name='upvotes')
+    total_upvotes = models.IntegerField(default='0')
 
+    '''
     @property
     def total_upvotes(self):
         return self.upvotes.count()
@@ -19,7 +21,7 @@ class Post(models.Model):
     def __str__(self):
         return self.content
     # sets the redirect to the new specific post's absolute path
-
+    '''
     '''
     def save(self, *args, **kwargs): # args and kwargs lets us accept any keywords for our method
         super().save(*args, **kwargs)

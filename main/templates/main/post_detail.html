@@ -84,27 +84,8 @@
                     {{ object.content }}
                   </p>
               </div>
-              <div class="card-footer">
-                {% if user.is_authenticated %}
-                  <form action="{% url 'main:upvote_post' post.pk %}" method=POST>
-                      {% csrf_token %}
-                    <!-- check to see if user has already upvoted post.-->
-                      {%  if upvoted %}
-                  <button type="submit" class="btn btn-success btn-sm" name="post_id" value="{{ post.id }}"><!--i class="fa fa-gittip"></i--> Upvote ({{ post.total_upvotes }})</button>
-                      {% else %} 
-                  <button type="submit" class="btn btn-outline-success btn-sm" name="post_id" value="{{ post.id }}"><!--i class="fa fa-gittip"></i--> Upvote ({{ post.total_upvotes }})</button>
-                      {% endif %} 
-                  
-                  <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>
-                  {% if object.user == user %}
-                  <a href="{% url 'main:post-update' object.id %}" class="card-link">Edit</a>
-                  <a href="{% url 'main:post-delete' object.id %}" class="card-link" style="color:red">Delete</a>
-                  {% endif %}
-                {% else %}
-                Upvote ({{ total_upvotes }}) Please login to upvote or comment.
-                {%  endif %}  
-                </form>
-              </div>
+              {% include "main/includes/post_footer.html" %}
+
               <div class="card-body">
                 <p class="card-text">
                     <form method="POST">
@@ -154,4 +135,27 @@
       </div>
   </div>
 </div>
+
+<script>
+    $(document).on('click', '#upvote-btn', function (e) {
+     e.preventDefault();
+     $.ajax({
+       type: 'POST',
+       url: '{% url "main:upvote-post" %}',
+       data: {
+         postid: $('#upvote-btn').val(),
+         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+         action: 'post'
+       },
+       success: function (json) {
+         document.getElementById("total_upvotes").innerHTML = json['result']
+       },
+       error: function (xhr, errmsg, err) {
+        console.log(err)
+       }
+     });
+   })
+ 
+ </script>
 {% endblock content %}
+
