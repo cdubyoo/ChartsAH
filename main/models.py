@@ -10,7 +10,7 @@ class Post(models.Model):
     content = models.TextField(blank=True, null=True) # change blank later
     date_posted = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change to required later 
-    upvotes = models.ManyToManyField(User, related_name='upvotes')
+    upvotes = models.ManyToManyField(User, blank=True, related_name='upvotes')
 
     @property
     def total_upvotes(self):

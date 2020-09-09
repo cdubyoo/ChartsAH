@@ -9,9 +9,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-
+from django.template.loader import render_to_string
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
@@ -91,13 +91,12 @@ class post_detail_view(DetailView):
           context['form'] = CommentForm(instance=self.request.user) 
 
           current_post = get_object_or_404(Post, id=self.kwargs['pk']) #grab post with id of pk that page is currently on
-          # total_upvotes = current_post.total_upvotes() #calling the total_upvotes function from the model to store the count 
-          context['total_upvotes'] = Post.total_upvotes #call upon the property of total_upvotes from Post model
-          
           upvoted = False #initial value for upvoted is false 
           if current_post.upvotes.filter(id=self.request.user.id).exists(): #if relation exists between user and post upvote
                upvoted = True #then value will be true
           context['upvoted'] = upvoted #reflect the boolean value into the context dictionary for 'upvoted', which will be called upon in the html
+
+          context['total_upvotes'] = Post.total_upvotes #call upon the property of total_upvotes from Post model
           
           
           return context
@@ -167,20 +166,52 @@ class user_posts(LoginRequiredMixin, ListView):
           return self.get(self, request, *args, **kwargs)
      
           
+def upvote(request):
+     if request.POST.get('action') == 'post':
+          result = ''
+          id = int(request.POST.get('postid'))
+          post = get_object_or_404(Post, id=id)
+          if post.upvotes.filter(id=request.user.id).exists():
+               post.upvotes.remove(request.user)
+               post.total_upvotes -= 1
+               result = post.total_upvotes
+               post.save()
+          else:
+               post.upvotes.add(request.user)
+               post.total_upvotes += 1
+               result = post.total_upvotes
+               post.save()
 
-     
-def upvote_view(request, pk):
-     post = get_object_or_404(Post, id=request.POST.get('post_id')) # look up post table, and grab id from html name=post_id. assign this to 'post' variable
+          return JsonResponse({'result': result, })
+
+
+
+
+
+'''    
+def upvote_post(request, pk):
+     post = get_object_or_404(Post, id=request.POST.get('post.id')) # look up post table, and grab id from html name=post_id. assign this to 'post' variable
      upvoted = False #initial value of upvoted is false
-     if post.upvotes.filter(id=request.user.id).exists(): #filtering user and post.upvotes relationship and checking if it exists
+     if post.upvotes.filter(id=request.user.id).exists(): #filtering user and post.upvotes relationship and checking if it exists(upvotes is an attribute from the post model)
           post.upvotes.remove(request.user) #remove the relation
           upvoted = False
      else: #if the above is false
           post.upvotes.add(request.user) # saving upvote from user. ie: 'chung liked post 28'
           upvoted = True
 
-     return HttpResponseRedirect(reverse('main:post-detail', args=[str(pk)])) #this will refer to url only by its name attribute with its specific pk
+     context = {
+          'post': post,
+          'upvoted': upvoted,
+          'total_upvotes': total_upvotes
 
+     }
+
+     if request.is_ajax():
+          html = render_to_string('main:post_footer.html', context, request=request) #renders string and returns results to html
+          return JsonResponse({'form': html}, pk=pk) #returns json which will be used in ajax
+
+    # return HttpResponseRedirect(reverse('main:post-detail', args=[str(pk)])) #this will refer to url only by its name attribute with its specific pk
+'''
 
 
 # register

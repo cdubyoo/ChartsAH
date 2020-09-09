@@ -96,10 +96,9 @@
                     {{ post.content }}
                   </p>
               </div>
-              <div class="card-footer">
-                  <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-                  <a href="{% url 'main:post-detail' post.id %}" class="card-link"><i class="fa fa-comment"></i> Comment</a>
-              </div>
+              
+                {% include "main/includes/post_footer.html" %}
+              
           </div>
           <br>
           {% endfor %}
