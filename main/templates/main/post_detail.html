@@ -136,26 +136,6 @@
   </div>
 </div>
 
-<script>
-    $(document).on('click', '#upvote-btn', function (e) {
-     e.preventDefault();
-     $.ajax({
-       type: 'POST',
-       url: '{% url "main:upvote-post" %}',
-       data: {
-         postid: $('#upvote-btn').val(),
-         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-         action: 'post'
-       },
-       success: function (json) {
-         document.getElementById("total_upvotes").innerHTML = json['result']
-       },
-       error: function (xhr, errmsg, err) {
-        console.log(err)
-       }
-     });
-   })
- 
- </script>
+
 {% endblock content %}
 

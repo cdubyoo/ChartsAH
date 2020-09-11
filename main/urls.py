@@ -21,5 +21,4 @@ urlpatterns = [
     path("user/<str:username>", user_posts.as_view(), name="user-posts"), #profile view
     path("upvote", views.upvote, name='upvote-post'), 
 
-
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

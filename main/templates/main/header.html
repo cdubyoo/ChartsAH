@@ -17,8 +17,28 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-
     
-
+    <!--// AJAX for upvotes \\-->
+    <script>
+      $(document).on('click', '.upvote-btn', function (e) {
+     e.preventDefault();
+     $.ajax({
+       type: 'POST',
+       url: '{% url "main:upvote-post" %}',
+       data: {
+         postid: e.target.value,
+         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+         action: 'post'
+       },
+       success: function (json) {
+        document.getElementById("total_upvotes_for_"+e.target.value).innerHTML = json['result']
+         console.log(e.target.value)
+       },
+       error: function (xhr, errmsg, err) {
+        console.log(err)
+       }
+     });
+   })
+   </script>
 </body>
 

@@ -3,43 +3,34 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 
-User = settings.AUTH_USER_MODEL #this is the user model which will be used to be called upon to tie relations to
-# Create your models here.
+User = settings.AUTH_USER_MODEL #this is the user model
+
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #many to one relationship where many posts can be tied to one user
-    content = models.TextField(blank=True, null=True) # change blank later
+    content = models.TextField(blank=True, null=True) 
     date_posted = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change to required later 
     upvotes = models.ManyToManyField(User, blank=True, related_name='upvotes')
     total_upvotes = models.IntegerField(default='0')
 
-    '''
-    @property
-    def total_upvotes(self):
-        return self.upvotes.count()
+    def get_absolute_url(self):
+        return reverse('main:post-detail', kwargs={'pk': self.pk}) #returns the url for individual posts
 
     def __str__(self):
         return self.content
-    # sets the redirect to the new specific post's absolute path
-    '''
-    '''
-    def save(self, *args, **kwargs): # args and kwargs lets us accept any keywords for our method
-        super().save(*args, **kwargs)
 
-        img = Image.open(self.image.path)
 
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.image.path)
-    '''
-    
-    def get_absolute_url(self):
-        return reverse('main:post-detail', kwargs={'pk': self.pk})
+class Upvote(models.Model):
+    user = models.ForeignKey(User, related_name='upvoted_user', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name='upvoted_post',  on_delete=models.CASCADE)
 
+    def __str__(self):
+        return str(self.user) + ':' + str(self.post)
+
+ 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')  #add in later
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics') 
     bio = models.TextField(max_length=1000, blank=True)
 
     @property

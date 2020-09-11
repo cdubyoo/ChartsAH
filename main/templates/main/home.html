@@ -2,6 +2,7 @@
 {% block head_title %}Home{% endblock head_title %}
 {% block content %}
 {% include "main/includes/messages.html" %}
+
 <div class='row text-center'>
   <div class='col'>
       <h3>Trader Feed</h3>
@@ -95,7 +96,29 @@
                     {{ post.content }}
                   </p>
               </div>
-                {% include "main/includes/post_footer.html" %}
+              <div id="upvote-section" class="card-footer">
+                {% if user.is_authenticated %}
+                    <form action="{% url 'main:upvote-post' %}" method=POST>
+                        {% csrf_token %}
+                    <!-- check to see if user has already upvoted post.-->
+                    
+                    <button type="submit" class="btn btn-success btn-sm upvote-btn" id={{post.id}} name="post_id" value={{post.id}}>Upvote</button>
+                    
+                
+                    <p id="total_upvotes_for_{{post.id}}">
+                        {{ post.total_upvotes}}
+                    </p>
+                    <p> {{ post.id }}</p>
+                    <a href="{% url 'main:post-detail' post.id %}" class="card-link"></i> Comment</a>
+                    {% if post.user == user %}
+                    <a href="{% url 'main:post-update' post.id %}" class="card-link">Edit</a>
+                    <a href="{% url 'main:post-delete' post.id %}" class="card-link" style="color:red">Delete</a>
+                    {% endif %}
+                    </form>
+                {% else %}
+                Upvotes ({{ post.total_upvotes }}) Please login to upvote or comment.
+                {%  endif %}  
+                </div>
                 
           </div>
           <br>
@@ -150,26 +173,5 @@
 </div>
 
 
-<script>
-    $(document).on('click', '#upvote-btn', function (e) {
-     e.preventDefault();
-     $.ajax({
-       type: 'POST',
-       url: '{% url "main:upvote-post" %}',
-       data: {
-         postid: $('#upvote-btn').val(),
-         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-         action: 'post'
-       },
-       success: function (json) {
-         document.getElementById("total_upvotes").innerHTML = json['result']
-       },
-       error: function (xhr, errmsg, err) {
- 
-       }
-     });
-   })
- 
- </script>
-
 {% endblock %}
+

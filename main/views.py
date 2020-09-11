@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from .models import Post, Profile, Follow, Comment
+from .models import Post, Profile, Follow, Comment, Upvote
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
@@ -18,6 +18,7 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # class based views handle backend logic using generic views and inherit from mixins
 
 #home page
+'''
 def homepage(request, *args, **kwargs):
      # render in the 'posts' with all the objects as post, to call it on the template
      context = {
@@ -26,6 +27,7 @@ def homepage(request, *args, **kwargs):
      return render(request,
                   'main/home.html',
                   context)
+'''
 
 # creating posts
 class post_create_view(LoginRequiredMixin, CreateView):
@@ -51,7 +53,7 @@ class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                return True
           return False
 
-# list of all posts, will be changed to discover page, showcasing top trades of the day instead
+# list of all posts
 class post_list_view(ListView):
     
      model = Post
@@ -59,6 +61,8 @@ class post_list_view(ListView):
      context_object_name = 'posts' # this is called from the html as 'for post in posts'
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
      paginate_by = 5 #sets pagination per page
+
+
 
 
 # feed of user's followings
@@ -101,8 +105,6 @@ class post_detail_view(DetailView):
           
           return context
 
-
-     
      def post(self, request, *args, **kwargs):
           create_comment = Comment(content=request.POST.get('content'),
                                    user=self.request.user, post=self.get_object())
@@ -164,31 +166,37 @@ class user_posts(LoginRequiredMixin, ListView):
                     follows_between.delete() 
 
           return self.get(self, request, *args, **kwargs)
-     
-          
+
+
+
+
 def upvote(request):
      if request.POST.get('action') == 'post':
           result = ''
-          id = int(request.POST.get('postid'))
-          post = get_object_or_404(Post, id=id)
-          if post.upvotes.filter(id=request.user.id).exists():
-               post.upvotes.remove(request.user)
-               post.total_upvotes -= 1
-               result = post.total_upvotes
+          id = int(request.POST.get('postid')) 
+          post = get_object_or_404(Post, id=id) #grabbing the selected post using postid
+          new_relation = Upvote(user=request.user, post=post) #storing the upvote relation between user and post using Upvote model arguments - 'user' and 'post'
+          if post.upvotes.filter(id=request.user.id).exists(): #checking if user already has upvote relations with post by filtering user and post
+               post.upvotes.remove(request.user) #remove upvote relation from post 
+               post.total_upvotes -= 1 #minus 1 total_upvotes from post
+               result = post.total_upvotes #storing the new total_upvotes into result
+               Upvote.objects.filter(user=request.user, post=post).delete() #filtering user and post and deleting the upvote table
                post.save()
           else:
                post.upvotes.add(request.user)
                post.total_upvotes += 1
                result = post.total_upvotes
+               print('create upvote')
+               new_relation.save()  
                post.save()
 
-          return JsonResponse({'result': result, })
+          return JsonResponse({'result': result, }) # return the new total_vote count back to html as json
 
 
 
 
-
-'''    
+'''
+ 
 def upvote_post(request, pk):
      post = get_object_or_404(Post, id=request.POST.get('post.id')) # look up post table, and grab id from html name=post_id. assign this to 'post' variable
      upvoted = False #initial value of upvoted is false
