@@ -1,26 +1,25 @@
 
 <div id="upvote-section" class="card-footer">
-{% if user.is_authenticated %}
-    <form action="{% url 'main:upvote-post' %}" method=POST>
-        {% csrf_token %}
-    <!-- check to see if user has already upvoted post.-->
-        {%  if upvoted %}
-    <button type="submit" class="btn btn-success btn-sm upvote-btn" id="upvote-btn" name="post_id" value="{{post.id}}">Upvote</button>
-        {% else %} 
-    <button type="submit" class="btn btn-outline-success btn-sm upvote-btn" id="upvote-btn" name="post_id" value="{{post.id}}">Upvote</button>
-        {% endif %} 
-    <p id="total_upvotes" class="total_upvotes">
-        {{ post.total_upvotes }}
-    </p>
-    <a href="{% url 'main:post-detail' post.id %}" class="card-link">Comment</a>
-    {% if post.user == user %}
-    <a href="{% url 'main:post-update' post.id %}" class="card-link">Edit</a>
-    <a href="{% url 'main:post-delete' post.id %}" class="card-link" style="color:red">Delete</a>
-    {% endif %}
-    </form>
-{% else %}
-Upvotes ({{ post.total_upvotes }}) Please login to upvote or comment.
-{%  endif %}  
-</div>
-
+    {% if user.is_authenticated %}
+        <form action="{% url 'main:upvote-post' %}" method=POST>
+            {% csrf_token %}
+        <!-- check to see if user has already upvoted post.-->
+        {% if post.upvoted %}
+        <button type="submit" class="btn btn-success btn-sm upvote-btn" id={{post.id}} name="post_id" value={{post.id}}>Upvote</button>
+        {% else %}
+        <button type="submit" class="btn btn-outline-success btn-sm upvote-btn" id={{post.id}} name="post_id" value={{post.id}}>Upvote</button>
+        {% endif %}
+        <p id="total_upvotes_for_{{post.id}}"> <!-- insert post id into the element here so it could be called in the script -->
+            {{ post.total_upvotes}}
+        </p>
+        <a href="{% url 'main:post-detail' post.id %}" class="card-link"></i> Comment</a>
+        {% if post.user == user %}
+        <a href="{% url 'main:post-update' post.id %}" class="card-link">Edit</a>
+        <a href="{% url 'main:post-delete' post.id %}" class="card-link" style="color:red">Delete</a>
+        {% endif %}
+        </form>
+    {% else %}
+    Upvotes ({{ post.total_upvotes }}) Please login to upvote or comment.
+    {%  endif %}  
+    </div>
 

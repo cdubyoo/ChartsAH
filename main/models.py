@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
 
-User = settings.AUTH_USER_MODEL #this is the user model
+User = settings.AUTH_USER_MODEL #this is the user model, 'user_id' is how user is called in the model
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #many to one relationship where many posts can be tied to one user
@@ -23,6 +23,9 @@ class Post(models.Model):
 class Upvote(models.Model):
     user = models.ForeignKey(User, related_name='upvoted_user', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='upvoted_post',  on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'post')
 
     def __str__(self):
         return str(self.user) + ':' + str(self.post)

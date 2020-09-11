@@ -96,29 +96,7 @@
                     {{ post.content }}
                   </p>
               </div>
-              <div id="upvote-section" class="card-footer">
-                {% if user.is_authenticated %}
-                    <form action="{% url 'main:upvote-post' %}" method=POST>
-                        {% csrf_token %}
-                    <!-- check to see if user has already upvoted post.-->
-                    
-                    <button type="submit" class="btn btn-success btn-sm upvote-btn" id={{post.id}} name="post_id" value={{post.id}}>Upvote</button>
-                    
-                
-                    <p id="total_upvotes_for_{{post.id}}">
-                        {{ post.total_upvotes}}
-                    </p>
-                    <p> {{ post.id }}</p>
-                    <a href="{% url 'main:post-detail' post.id %}" class="card-link"></i> Comment</a>
-                    {% if post.user == user %}
-                    <a href="{% url 'main:post-update' post.id %}" class="card-link">Edit</a>
-                    <a href="{% url 'main:post-delete' post.id %}" class="card-link" style="color:red">Delete</a>
-                    {% endif %}
-                    </form>
-                {% else %}
-                Upvotes ({{ post.total_upvotes }}) Please login to upvote or comment.
-                {%  endif %}  
-                </div>
+              {% include "main/includes/post_footer.html" %}
                 
           </div>
           <br>

@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.db.models import Exists, OuterRef
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
@@ -62,6 +63,14 @@ class post_list_view(ListView):
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
      paginate_by = 5 #sets pagination per page
 
+     # using Exists() subquery to check if table exists between user, post, and upvotes
+     def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).annotate(
+            upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
+                user_id=self.request.user.id,
+                post_id=OuterRef('pk')
+            ))
+        )
 
 
 
@@ -83,6 +92,14 @@ class feed_list_view(LoginRequiredMixin, ListView):
           return Post.objects.filter(user__in=follows).order_by('-date_posted') 
           # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
 
+     def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).annotate(
+            upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
+                user_id=self.request.user.id,
+                post_id=OuterRef('pk')
+            ))
+        )
+
 
 #individual post view
 class post_detail_view(DetailView):
@@ -90,19 +107,20 @@ class post_detail_view(DetailView):
      template_name = 'main/post_detail.html'
      context_object_name = 'post'
 
+     # render upvote status
+     def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).annotate(
+            upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
+                user_id=self.request.user.id,
+                post_id=OuterRef('pk')
+            ))
+        )
+
+     # render comment form
      def get_context_data(self, **kwargs):
           context = super().get_context_data(**kwargs)
           context['form'] = CommentForm(instance=self.request.user) 
 
-          current_post = get_object_or_404(Post, id=self.kwargs['pk']) #grab post with id of pk that page is currently on
-          upvoted = False #initial value for upvoted is false 
-          if current_post.upvotes.filter(id=self.request.user.id).exists(): #if relation exists between user and post upvote
-               upvoted = True #then value will be true
-          context['upvoted'] = upvoted #reflect the boolean value into the context dictionary for 'upvoted', which will be called upon in the html
-
-          context['total_upvotes'] = Post.total_upvotes #call upon the property of total_upvotes from Post model
-          
-          
           return context
 
      def post(self, request, *args, **kwargs):
