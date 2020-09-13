@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 User = settings.AUTH_USER_MODEL #this is the user model, 'user_id' is how user is called in the model
 
@@ -9,9 +10,11 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #many to one relationship where many posts can be tied to one user
     content = models.TextField(blank=True, null=True) 
     date_posted = models.DateTimeField(default=timezone.now)
-    image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change to required later 
+    image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change blank = false later
     upvotes = models.ManyToManyField(User, blank=True, related_name='upvotes')
     total_upvotes = models.IntegerField(default='0')
+    ticker = models.CharField(blank=False, null=True, max_length=5)
+    tags = TaggableManager(blank=True)
 
     def get_absolute_url(self):
         return reverse('main:post-detail', kwargs={'pk': self.pk}) #returns the url for individual posts

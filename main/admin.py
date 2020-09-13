@@ -4,7 +4,7 @@ from .models import Post, Profile, Follow, Comment, Upvote
 from django.db import models
 # Register your models here.
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'user']
+    list_display = ['__str__', 'user', 'ticker', 'tags']
     class Meta:
         model = Post
 
@@ -23,9 +23,13 @@ class UpvoteAdmin(admin.ModelAdmin):
     class Meta:
         model = Upvote
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('post', 'user', 'content', 'created_date')
+    class Meta:
+        model = Comment
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Follow, FollowAdmin)
-admin.site.register(Comment)
+admin.site.register(Comment, CommentAdmin)
 admin.site.register(Upvote, UpvoteAdmin)

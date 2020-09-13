@@ -52,55 +52,7 @@
                 <!--- \\\\\\\Post-->
           {% endif %}
           <br>
-{% for post in posts %}
-          <!--- \\\\\\\Post-->
-          <div class="card gedf-card">
-              <div class="card-header">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div class="d-flex justify-content-between align-items-center">
-                          <div class="mr-2">
-                              <img class="thumbnail" width="45" height="45" src="{{ post.user.profile.image.url }}" alt="">
-                          </div>
-                          <div class="ml-2">
-                              <div class="h5 m-0">
-                                <a class="mr-2" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
-                              </div>
-                              <div class="h7 text-muted">{{ post.date_posted|date:"F d, Y" }}</div>
-                          </div>
-                      </div>
-                      <div>
-                          <!--div class="dropdown">
-                              <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="fa fa-ellipsis-h"></i>
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
-                                  <div class="h6 dropdown-header">Configuration</div>
-                                  <a class="dropdown-item" href="#">Save</a>
-                                  <a class="dropdown-item" href="#">Hide</a>
-                                  <a class="dropdown-item" href="#">Report</a>
-                              </div>
-                          </div-->
-                      </div>
-                  </div>
-              </div>
-              <div class="card-body">
-                  <a class="card-link" href="#">
-                      <!-- h5 class="card-title"> Title </h5 -->
-                  </a>
-                  {% if post.image %}
-                  <p class="card-text">
-                    <img width=480 height= 400 src="{{ post.image.url }}" alt="">
-                  </p>
-                  {%  endif %}
-                  <p class="card-text">
-                    {{ post.content }}
-                  </p>
-              </div>
-              {% include "main/includes/post_footer.html" %}
-                
-          </div>
-          <br>
-          {% endfor %}
+          {% include "main/includes/post.html" %}
           {% if is_paginated %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">

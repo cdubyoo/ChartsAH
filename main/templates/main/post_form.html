@@ -1,6 +1,10 @@
 {% extends 'main/header.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+{% load static %}
+<script src="{% static 'tagsinput.js' %}"></script>
+<link rel="stylesheet" href="{% static 'tagsinput.css' %}"/>
+
     <div class="card gedf-card">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
@@ -17,6 +21,8 @@
                                 {% csrf_token %}
                                 {{ form.media }}
                                 {{form |crispy}}
+                                <!-- use this for tags input after ui change -->
+                                <!--input type="text" data-role="tagsinput" class="form-control" name="tags"--> 
                     </div>
                 </div>
             </div>

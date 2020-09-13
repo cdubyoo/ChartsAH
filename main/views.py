@@ -8,11 +8,14 @@ from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, Com
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
+
+
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
@@ -33,7 +36,7 @@ def homepage(request, *args, **kwargs):
 # creating posts
 class post_create_view(LoginRequiredMixin, CreateView):
      model = Post
-     fields = ['content', 'image']
+     fields = ['content', 'image', 'ticker', 'tags']
      #set user to logged in user then validate the form
      def form_valid(self, form):
           form.instance.user = self.request.user
@@ -42,7 +45,7 @@ class post_create_view(LoginRequiredMixin, CreateView):
 # update view
 class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
      model = Post
-     fields = ['content', 'image']
+     fields = ['content', 'image','ticker', 'tags']
      #set user to logged in user then validate the form
      def form_valid(self, form):
           form.instance.user = self.request.user
@@ -53,6 +56,24 @@ class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
           if self.request.user == post.user:
                return True
           return False
+
+class search_view(TemplateView): # templateview renders a given template, with the context containing parameters captured in the url
+    template_name = 'main/search.html'
+
+     # searches through everything using Q import 
+    def get(self, request, *args, **kwargs):
+        q = request.GET.get('q')
+        self.posts = Post.objects.filter(
+             Q(ticker__icontains=q) |
+             Q(user__username__icontains=q) |
+             Q(content__icontains=q) |
+             Q(tags__name__icontains=q) 
+          ).distinct()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(posts=self.posts, **kwargs) # returns the template with the get request data
+
 
 # list of all posts
 class post_list_view(ListView):
@@ -191,7 +212,7 @@ class user_posts(LoginRequiredMixin, ListView):
 def upvote(request):
      if request.POST.get('action') == 'post':
           result = ''
-          id = int(request.POST.get('postid')) 
+          id = request.POST.get('postid')
           post = get_object_or_404(Post, id=id) #grabbing the selected post using postid
           new_relation = Upvote(user=request.user, post=post) #storing the upvote relation between user and post using Upvote model arguments - 'user' and 'post'
           if post.upvotes.filter(id=request.user.id).exists(): #checking if user already has upvote relations with post by filtering user and post
@@ -209,35 +230,6 @@ def upvote(request):
                post.save()
 
           return JsonResponse({'result': result, }) # return the new total_vote count back to html as json
-
-
-
-
-'''
- 
-def upvote_post(request, pk):
-     post = get_object_or_404(Post, id=request.POST.get('post.id')) # look up post table, and grab id from html name=post_id. assign this to 'post' variable
-     upvoted = False #initial value of upvoted is false
-     if post.upvotes.filter(id=request.user.id).exists(): #filtering user and post.upvotes relationship and checking if it exists(upvotes is an attribute from the post model)
-          post.upvotes.remove(request.user) #remove the relation
-          upvoted = False
-     else: #if the above is false
-          post.upvotes.add(request.user) # saving upvote from user. ie: 'chung liked post 28'
-          upvoted = True
-
-     context = {
-          'post': post,
-          'upvoted': upvoted,
-          'total_upvotes': total_upvotes
-
-     }
-
-     if request.is_ajax():
-          html = render_to_string('main:post_footer.html', context, request=request) #renders string and returns results to html
-          return JsonResponse({'form': html}, pk=pk) #returns json which will be used in ajax
-
-    # return HttpResponseRedirect(reverse('main:post-detail', args=[str(pk)])) #this will refer to url only by its name attribute with its specific pk
-'''
 
 
 # register

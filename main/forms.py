@@ -19,13 +19,14 @@ class NewUserForm(UserCreationForm):
         return user
 
 MAX_LENGTH = 250
+TICKER_LENGTH = 5
 
 # create post form
 class PostForm(forms.ModelForm):
     class Meta: # declare the form
         model = Post
-        fields = ['content', 'image']
-# make sure form follows rules
+        fields = ['content', 'image', 'ticker', 'tags']
+# make sure form follows max legnth rules
     def clean_content(self):
         content = self.cleaned_data.get("content")
         if len(content) > MAX_LENGTH:
