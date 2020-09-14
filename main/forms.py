@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Post, Profile, Comment
 
+
 # changing the form to include email and bio
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -21,17 +22,21 @@ class NewUserForm(UserCreationForm):
 MAX_LENGTH = 250
 TICKER_LENGTH = 5
 
+
 # create post form
 class PostForm(forms.ModelForm):
+
     class Meta: # declare the form
         model = Post
-        fields = ['content', 'image', 'ticker', 'tags']
+        fields = ['content', 'image', 'ticker', 'date_traded', 'tags']
+        
 # make sure form follows max legnth rules
     def clean_content(self):
         content = self.cleaned_data.get("content")
         if len(content) > MAX_LENGTH:
             raise forms.ValidationError("Post exceeded max length of 250 characters.")
         return content
+
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()

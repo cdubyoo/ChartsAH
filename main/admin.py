@@ -4,7 +4,7 @@ from .models import Post, Profile, Follow, Comment, Upvote
 from django.db import models
 # Register your models here.
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'user', 'ticker', 'tags']
+    list_display = ['__str__', 'user', 'ticker', 'date_traded','tags']
     class Meta:
         model = Post
 

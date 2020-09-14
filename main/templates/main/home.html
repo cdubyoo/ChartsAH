@@ -52,7 +52,9 @@
                 <!--- \\\\\\\Post-->
           {% endif %}
           <br>
+          {% for post in posts %}
           {% include "main/includes/post.html" %}
+          {% endfor %}
           {% if is_paginated %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">

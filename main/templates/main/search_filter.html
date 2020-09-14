@@ -1,7 +1,17 @@
+
 {% extends 'main/header.html' %}
 {% block head_title %}Home{% endblock head_title %}
+{% load crispy_forms_tags %}
+
 {% block content %}
 {% include "main/includes/messages.html" %}
+
+{% load static %}
+<script src="{% static 'tagsinput.js' %}"></script>
+<link rel="stylesheet" href="{% static 'tagsinput.css' %}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.9/datepicker.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.9/datepicker.min.js"> </script>
+
 <div class='row text-center'>
   <div class='col'>
       <h3>Trader Feed</h3>
@@ -33,9 +43,24 @@
       </div>
       <div class="col-md-6 gedf-main" >
           <!--- \\\\\\\Post-->
-          <div class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
+          <div style="color:white" class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
               <div class="card-header">
-                          <a  href="post/create/" style= "color:white ">Share a Trade</a>
+                <form method="GET" enctype="multipart/form-data">
+                    {{ filter.form | crispy }}
+
+                     <!-- DatePicker -->
+
+                     <script>
+                        $(function () {
+                        $(".datepicker").datepicker();
+                        });
+                    </script>
+                    <!-- DatePicker -->
+
+                    <div class="col text-center">
+                <button class="btn btn-outline-info"type="submit">Search</button>
+            </div>
+                </form>
               </div>
           </div>
           {% else %}
@@ -48,14 +73,70 @@
                 </div>
             </div>
             <div class="col-md-6 gedf-main" >
-                <!--- Post-->
+                <!--- \\\\\\\Post-->
           {% endif %}
           <br>
-          {% for post in posts %}
-          {% include "main/includes/post.html" %}
+          {% for post in filter.qs %}
+{% load humanize %}
+          <!--- \\\\\\\Post-->
+          <div class="card gedf-card">
+              <div class="card-header">
+                  <div class="d-flex justify-content-between align-items-center">
+                      <div class="d-flex justify-content-between align-items-center">
+                          <div class="mr-2">
+                              <img class="thumbnail" width="65" height="65" src="{{ post.user.profile.image.url }}" alt="">
+                          </div>
+                          <div class="ml-2">
+                              <div class="h5 mb-1">
+                                <a class="mr-2" style="color:inherit" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
+                              </div>
+                              <div class="h7">
+                                <a href="{% url 'main:post-detail' post.id %}" class="btn btn-outline-dark btn-sm" >{{ post.ticker | upper }}</a>
+                                <span class="text-muted">
+                                from {{ post.date_posted| naturaltime }}
+                                </span>
+                                <br>
+                                {% for tag in post.tags.all %}
+                                 <span class="badge badge-secondary mt-1" > {{ tag.name }} </span>
+                                {% endfor %}
+                              </div>
+                          </div>
+                      </div>
+                      <div>
+                          <!--div class="dropdown">
+                              <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class="fa fa-ellipsis-h"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+                                  <div class="h6 dropdown-header">Configuration</div>
+                                  <a class="dropdown-item" href="#">Save</a>
+                                  <a class="dropdown-item" href="#">Hide</a>
+                                  <a class="dropdown-item" href="#">Report</a>
+                              </div>
+                          </div-->
+                      </div>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <a class="card-link" href="#">
+                      <!-- h5 class="card-title"> Title </h5 -->
+                  </a>
+                  {% if post.image %}
+                  <p class="card-text">
+                    <img width=480 height= 400 src="{{ post.image.url }}" alt="">
+                  </p>
+                  {%  endif %}
+                  <p class="card-text">
+                      <span class="text-muted">{{ post.date_traded | date:"D, M d, Y"}}</span>
+                      <br>
+                    {{ post.content }}
+                  </p>
+              </div>
+              {% include "main/includes/post_footer.html" %}
+                
+          </div>
+          <br>
           {% endfor %}
-
-          <!-- check for pagination-->
           {% if is_paginated %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
@@ -104,4 +185,7 @@
       </div>
   </div>
 </div>
+
+
 {% endblock %}
+

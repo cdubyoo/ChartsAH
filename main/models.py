@@ -9,12 +9,13 @@ User = settings.AUTH_USER_MODEL #this is the user model, 'user_id' is how user i
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #many to one relationship where many posts can be tied to one user
     content = models.TextField(blank=True, null=True) 
-    date_posted = models.DateTimeField(default=timezone.now)
+    date_traded = models.DateTimeField(verbose_name= ('Date Traded'))
     image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change blank = false later
     upvotes = models.ManyToManyField(User, blank=True, related_name='upvotes')
     total_upvotes = models.IntegerField(default='0')
     ticker = models.CharField(blank=False, null=True, max_length=5)
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, help_text=('Press Enter or comma to seperate tags.')) #erased help text
+    date_posted = models.DateTimeField(default=timezone.now)
 
     def get_absolute_url(self):
         return reverse('main:post-detail', kwargs={'pk': self.pk}) #returns the url for individual posts

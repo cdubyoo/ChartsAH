@@ -1,12 +1,14 @@
 from django.urls import path, re_path #url()
 from . import views
-from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, post_delete_view, user_posts, feed_list_view, search_view)
+from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, post_delete_view, user_posts, feed_list_view, search_view, search_filter_view)
 from django.conf import settings
 from django.conf.urls.static import static
 
 
 app_name = 'main'  
 #call upon the function from view and links it to url path
+# views. = function based views
+# as_view() = class based views
 urlpatterns = [
     path("", post_list_view.as_view(), name="home"),
     path("feed/", feed_list_view.as_view(), name="feed"),
@@ -20,6 +22,7 @@ urlpatterns = [
     path("profile/", views.profile, name= "profile"),
     path("user/<str:username>", user_posts.as_view(), name="user-posts"), #profile view
     path("upvote", views.upvote, name='upvote-post'), 
-    path("search/", search_view.as_view(), name='search')
+    path("search/", search_view.as_view(), name='search'),
+    path("search/filter/", search_filter_view.as_view(), name="search-filter")
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

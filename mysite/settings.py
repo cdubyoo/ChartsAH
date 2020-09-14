@@ -55,11 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize', # sets x days ago
     'main.apps.MainConfig',
     'crispy_forms',
     'storages',
-    'taggit'
+    'taggit',
+    'django_filters'
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

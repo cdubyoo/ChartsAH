@@ -12,8 +12,8 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.template.loader import render_to_string
 from django.db.models import Exists, OuterRef, Q
+from .filters import PostFilter
 
 
 
@@ -32,20 +32,71 @@ def homepage(request, *args, **kwargs):
                   'main/home.html',
                   context)
 '''
+'''
+def search_filter_view(request):
+     posts = Post.objects.all()
+     searchFilter = PostFilter(request.GET, queryset=posts)
+     
+     
+     print(searchFilter)
+     return render(request, 'main/search_filter.html', {'searchFilter': searchFilter})
+'''
+
+
+
+class search_filter_view(ListView):
+     model = Post
+     template_name = 'main/search_filter.html'
+
+     def get_form(self):
+          form = super(search_filter_view, self).get_form()
+          form.fields['date_traded'].widget.attrs.update({'class': 'datepicker'})
+          form.fields['tags'].widget.attrs.update({'data-role':'tagsinput'})
+          print('worked')
+          return form
+
+     def get_context_data(self, **kwargs):
+          context = super().get_context_data(**kwargs)
+          context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
+          return context
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # creating posts
 class post_create_view(LoginRequiredMixin, CreateView):
+
+     
      model = Post
-     fields = ['content', 'image', 'ticker', 'tags']
-     #set user to logged in user then validate the form
+     fields = ['content', 'image', 'ticker', 'date_traded', 'tags']
+     
+     #override createview fields and change attributes for script access
+     def get_form(self):
+          form = super(post_create_view, self).get_form()
+          form.fields['date_traded'].widget.attrs.update({'class': 'datepicker'})
+          form.fields['tags'].widget.attrs.update({'data-role':'tagsinput'})
+          return form
+     #set user to 'logged in user' then validate the form
      def form_valid(self, form):
           form.instance.user = self.request.user
           return super().form_valid(form)
-
+     
 # update view
 class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
      model = Post
-     fields = ['content', 'image','ticker', 'tags']
+     fields = ['content', 'image','ticker', 'date_traded', 'tags']
      #set user to logged in user then validate the form
      def form_valid(self, form):
           form.instance.user = self.request.user
@@ -65,8 +116,8 @@ class search_view(TemplateView): # templateview renders a given template, with t
         q = request.GET.get('q')
         self.posts = Post.objects.filter(
              Q(ticker__icontains=q) |
-             Q(user__username__icontains=q) |
-             Q(content__icontains=q) |
+             #Q(user__username__icontains=q) |
+             #Q(content__icontains=q) |
              Q(tags__name__icontains=q) 
           ).distinct()
         return super().get(request, *args, **kwargs)

@@ -4,6 +4,9 @@
 {% load static %}
 <script src="{% static 'tagsinput.js' %}"></script>
 <link rel="stylesheet" href="{% static 'tagsinput.css' %}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.9/datepicker.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.9/datepicker.min.js"> </script>
+
 
     <div class="card gedf-card">
         <div class="card-header">
@@ -20,9 +23,17 @@
                             <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 {{ form.media }}
-                                {{form |crispy}}
-                                <!-- use this for tags input after ui change -->
-                                <!--input type="text" data-role="tagsinput" class="form-control" name="tags"--> 
+                                {{form | crispy}}
+                                
+                                <!-- DatePicker -->
+
+                                <script>
+                                    $(function () {
+                                    $(".datepicker").datepicker();
+                                    });
+                                </script>
+
+                                <!-- DatePicker -->
                     </div>
                 </div>
             </div>
