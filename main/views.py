@@ -14,6 +14,8 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db.models import Exists, OuterRef, Q
 from .filters import PostFilter
+from datetime import datetime, timedelta, date
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 
@@ -85,6 +87,7 @@ class post_create_view(LoginRequiredMixin, CreateView):
      #override createview fields and change attributes for script access
      def get_form(self):
           form = super(post_create_view, self).get_form()
+          today = date.today()
           form.fields['date_traded'].widget.attrs.update({'class': 'datepicker'})
           form.fields['tags'].widget.attrs.update({'data-role':'tagsinput'})
           return form
@@ -126,23 +129,102 @@ class search_view(TemplateView): # templateview renders a given template, with t
         return super().get_context_data(posts=self.posts, **kwargs) # returns the template with the get request data
 
 
-# list of all posts
+# list of all posts sorted by new
 class post_list_view(ListView):
     
      model = Post
      template_name = 'main/home.html'
-     context_object_name = 'posts' # this is called from the html as 'for post in posts'
-     ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
-     paginate_by = 5 #sets pagination per page
+     paginate_by = 5
+     context_object_name = 'posts'
+     ordering = ['-date_posted']
 
+     
      # using Exists() subquery to check if table exists between user, post, and upvotes
      def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs).annotate(
-            upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
-                user_id=self.request.user.id,
-                post_id=OuterRef('pk')
-            ))
-        )
+          return super().get_queryset(*args, **kwargs).annotate(
+               upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
+                    user_id=self.request.user.id,
+                    post_id=OuterRef('pk')
+            )))
+ 
+
+# sort by all time top
+class top_all(ListView):
+     model = Post
+     template_name = 'main/home.html'
+     context_object_name = 'posts'
+     ordering = ['-total_upvotes'] # order by total upvotes
+     paginate_by = 5
+
+     # using Exists() subquery to check if table exists between user, post, and upvotes. to show if user has already upvoted posts
+     def get_queryset(self, *args, **kwargs):
+          return super().get_queryset(*args, **kwargs).annotate(
+               upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
+                    user_id=self.request.user.id,
+                    post_id=OuterRef('pk')
+            )))
+
+
+class top_day(ListView):     
+     model = Post
+     template_name = 'main/home.html'
+     context_object_name = 'posts'
+     paginate_by = 5
+
+     def get_queryset(self):
+          today = date.today()
+          return Post.objects.filter(date_traded__gte=today).annotate(
+               # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
+               upvoted=Exists(Post.upvotes.through.objects.filter( 
+               user_id=self.request.user.id,
+               post_id=OuterRef('pk')))).order_by('-total_upvotes')
+
+
+class top_week(ListView):     
+     model = Post
+     template_name = 'main/home.html'
+     context_object_name = 'posts'
+     paginate_by = 5
+
+     def get_queryset(self):
+          one_week_ago = datetime.today() - timedelta(days=7)
+          return Post.objects.filter(date_traded__gte=one_week_ago).annotate(
+               # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
+               upvoted=Exists(Post.upvotes.through.objects.filter( 
+               user_id=self.request.user.id,
+               post_id=OuterRef('pk')))).order_by('-total_upvotes')
+
+
+class top_month(ListView):     
+     model = Post
+     template_name = 'main/home.html'
+     context_object_name = 'posts'
+     paginate_by = 5
+
+     def get_queryset(self):
+          one_month_ago = datetime.today() - timedelta(days=30)
+          return Post.objects.filter(date_traded__gte=one_month_ago).annotate(
+               # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
+               upvoted=Exists(Post.upvotes.through.objects.filter( 
+               user_id=self.request.user.id,
+               post_id=OuterRef('pk')))).order_by('-total_upvotes')         
+
+class top_year(ListView):     
+     model = Post
+     template_name = 'main/home.html'
+     context_object_name = 'posts'
+     paginate_by = 5
+
+     def get_queryset(self):
+          one_year_ago = datetime.today() - timedelta(days=365)
+
+          return Post.objects.filter(date_traded__gte=one_year_ago).annotate(
+               # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
+               upvoted=Exists(Post.upvotes.through.objects.filter( 
+               user_id=self.request.user.id,
+               post_id=OuterRef('pk')))).order_by('-total_upvotes')         
+
+
 
 
 
@@ -150,27 +232,24 @@ class post_list_view(ListView):
 class feed_list_view(LoginRequiredMixin, ListView):
     
      model = Post
-     template_name = 'main/feed.html'
+     template_name = 'main/home.html'
      context_object_name = 'posts' # this is called from the html as 'for post in posts'
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
-     paginate_by = 5 #sets pagination per page
+     paginate_by = 2 #sets pagination per page
 
+     
      def get_queryset(self): #function to return a queryset(list of items) 
           user = self.request.user #specify user as current user who is sending request
           qs = Follow.objects.filter(user=user) #query set filtering by current user's follow table
           follows = [user] # store following users as an array as 'follows'
           for users in qs: #iterate through the query set with a for loop
                follows.append(users.to_follow) #add to array the users who are in the to_follow list of the user's follow table model
-          return Post.objects.filter(user__in=follows).order_by('-date_posted') 
-          # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
-
-     def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs).annotate(
-            upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
-                user_id=self.request.user.id,
-                post_id=OuterRef('pk')
-            ))
-        )
+          return Post.objects.filter(user__in=follows).annotate(
+               # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
+               upvoted=Exists(Post.upvotes.through.objects.filter(  
+               # ^^ using Exists() subquery to check if table exists between user, post, and upvotes. to show if user has already upvoted posts     
+               user_id=self.request.user.id,
+               post_id=OuterRef('pk')))).order_by('-date_posted') 
 
 
 #individual post view
@@ -201,6 +280,7 @@ class post_detail_view(DetailView):
           create_comment.save()
      
           return self.get(self, request, *args, **kwargs)
+
 
 class post_delete_view(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
      model = Post
@@ -245,7 +325,7 @@ class user_posts(LoginRequiredMixin, ListView):
      #post request, done as def post because its inside a class
      def post(self, request, *args, **kwargs):
           follows_between = Follow.objects.filter(user = request.user, to_follow = self.displayed_user()) # filter out current user and displayed user as a variable
-          if 'follow' in request.POST: # calling the post request from html name=follow
+          if 'follow' in request.POST: # calling the post request from template attribute name=follow
                new_relation = Follow(user=request.user, to_follow=self.displayed_user()) #filter new relation with request user and displayed user using Follow model
                if follows_between.count() == 0: # if there is no count/relation between the 2, then save new relation
                     new_relation.save() 

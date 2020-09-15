@@ -4,23 +4,30 @@ users
     - logout
     - profile
         - image
-        - bio/text
-        - follow button
+        - bio
+        - follow
     - feed
-        - user specific feed 
-        - user + who they follow
+        - user follow specific feed 
+        - feed sortable by upvotes or newest
+        - pagination
 
 posts - CRUD
     - creating
         - text
-        - image -> media storage server - bucket? s3?
+        - image -> media storage server - bucket s3 (still need to implement adjustment/zoom?)
+    - edit post
+    - delete
     - attach user
     - comments    
-    - delete
-    - upvote/downvote -> this needs to be changed with ajax so page does not reload    
+    - tags
+    - ticker
+    - date posted + date traded
+    - upvote with ajax without refreshing
 
-following / followers
+following / followers (list not yet implemented)
 
-inbox/messaging
+inbox/messaging (not yet implemented)
 
-explore searching by tickers
+searching
+    - quick search bar for tags and ticker
+    - advanced search by filtering user, date, tags, ticker

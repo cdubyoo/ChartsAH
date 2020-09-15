@@ -1,5 +1,6 @@
 {% extends 'main/header.html' %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 {% block head_title %}Home{% endblock head_title %}
 {% block content %}
 {% include "main/includes/messages.html" %}
@@ -58,7 +59,7 @@
                             <div class="h7">
                               <a href="{% url 'main:post-detail' post.id %}" class="btn btn-outline-dark btn-sm" >{{ post.ticker | upper }}</a>
                               <span class="text-muted">
-                              on {{ post.date_posted|date:"F d, Y" }}. 
+                              from {{ post.date_posted|naturaltime }}. 
                               </span>
                               <br>
                               {% for tag in post.tags.all %}
@@ -90,6 +91,8 @@
                 {%  endif %}
 
                   <p class="card-text">
+                    <span class="text-muted">{{ post.date_traded | date:"D, M d, Y"}}</span>
+                    <br>
                     {{ post.content }}
                   </p>
               </div>

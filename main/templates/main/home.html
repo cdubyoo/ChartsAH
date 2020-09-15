@@ -5,12 +5,39 @@
 
 <div class='row text-center'>
   <div class='col'>
-      <h3>Trader Feed</h3>
+    <div>
+        <span class="h3">
+      Trader Feed 
+        </span>
+        
+        
+        <a class="btn btn-secondary dropdown-toggle mb-3 ml-2" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Sort
+        </a>
+      
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            
+        
+            <a class="dropdown-item" href='/'>New</a>
+            <a class="dropdown-item" href="{% url 'main:top-day' %}">Daily</a>
+            <a class="dropdown-item" href="{% url 'main:top-week' %}">Weekly</a>
+            <a class="dropdown-item" href="{% url 'main:top-month' %}">Monthly</a>
+            <a class="dropdown-item" href="{% url 'main:top-year' %}">Yearly</a>
+            <a class="dropdown-item" href="{% url 'main:top-all' %}">All Time</a>
+        
+        
+        </div>
+    
+
+    </div>
+    
+    
   </div>
 </div>
 
-<div class="container gedf-wrapper">
+
     {% if user.is_authenticated %}
+    <div class="container gedf-wrapper">
   <div class="row">
       <div class="col-md-3">
           <div class="card">
@@ -40,6 +67,7 @@
               </div>
           </div>
           {% else %}
+          <div class="container gedf-wrapper">
           <div class="row">
             <div class="col-md-3">
                 <div class="card">
@@ -103,7 +131,6 @@
       </div>
   </div>
 </div>
-
 
 {% endblock %}
 
