@@ -1,7 +1,7 @@
 from django.urls import path #url()
 from . import views
-from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, 
-                    post_delete_view, user_posts, feed_list_view, search_view, search_filter_view, 
+from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, post_delete_view, 
+user_posts, following_view, follower_view, feed_list_view, search_view, search_filter_view, 
                     top_all, top_week, top_day, top_month, top_year)
 from django.conf import settings
 from django.conf.urls.static import static
@@ -23,11 +23,12 @@ urlpatterns = [
     path("post/<int:pk>/update", post_update_view.as_view(), name='post-update'),
     path("post/<int:pk>/delete", post_delete_view.as_view(), name='post-delete'),
     path("profile/", views.profile, name= "profile"),
+    path("user/<str:username>/following/", following_view.as_view(), name= "following"),
+    path("user/<str:username>/follower/", follower_view.as_view(), name= "followers"),
     path("user/<str:username>", user_posts.as_view(), name="user-posts"), #profile view
     path("upvote", views.upvote, name='upvote-post'), 
     path("search/", search_view.as_view(), name='search'),
     path("search/filter/", search_filter_view.as_view(), name="search-filter"),
-
     path("top/all/", top_all.as_view(), name="top-all"),
     path("top/week/", top_week.as_view(), name="top-week"),
     path("top/day/", top_day.as_view(), name="top-day"),

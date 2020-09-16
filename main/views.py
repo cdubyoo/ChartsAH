@@ -119,7 +119,7 @@ class post_list_view(ListView):
      model = Post
      template_name = 'main/home.html'
      paginate_by = 5
-     context_object_name = 'posts'
+     context_object_name = 'posts' # used for object name to be looped through 
      ordering = ['-date_posted']
 
      
@@ -321,6 +321,65 @@ class user_posts(LoginRequiredMixin, ListView):
                     follows_between.delete() 
 
           return self.get(self, request, *args, **kwargs)
+
+
+
+
+class following_view(ListView):
+     model = Follow
+     template_name = 'main/following.html'
+     context_object_name = 'follows'
+
+     def displayed_user(self):
+          return get_object_or_404(User, username=self.kwargs.get('username')) # user on display
+
+     def get_queryset(self):
+          user = self.displayed_user()
+          return Follow.objects.filter(user=user) #.order_by('-date')
+
+     # check to render the following section of the template
+     def get_context_data(self, *args, **kwargs):
+          # use of super is to add new value to context without losing the default view's context values
+          context = super().get_context_data(**kwargs) 
+          context['follow'] = 'following'
+          return context
+
+
+class follower_view(ListView):
+     model = Follow
+     template_name = 'main/following.html'
+     context_object_name = 'follows'
+
+     def displayed_user(self):
+          return get_object_or_404(User, username=self.kwargs.get('username')) # user on display
+
+     def get_queryset(self):
+          user = self.displayed_user()
+          return Follow.objects.filter(to_follow=user) #.order_by('-date')
+
+     # check to render the following section of the template
+     def get_context_data(self, *args, **kwargs):
+          # use of super is to add new value to context without losing the default view's context values
+          context = super().get_context_data(**kwargs) 
+          context['follow'] = 'followers'
+          return context
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
