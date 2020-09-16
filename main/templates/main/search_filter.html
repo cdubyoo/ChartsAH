@@ -2,10 +2,9 @@
 {% extends 'main/header.html' %}
 {% block head_title %}Home{% endblock head_title %}
 {% load crispy_forms_tags %}
-
 {% block content %}
 {% include "main/includes/messages.html" %}
-
+{% load mytemplatetags %}
 {% load static %}
 <script src="{% static 'tagsinput.js' %}"></script>
 <link rel="stylesheet" href="{% static 'tagsinput.css' %}"/>
@@ -77,7 +76,11 @@
                 <!--- \\\\\\\Post-->
           {% endif %}
           <br>
-          {% for post in filter.qs %}
+         
+          {% for post in object_list %} <!-- using FilterView which inherits from MultipleObjectMixin so have to use 'object_list'-->
+          
+
+          
 {% load humanize %}
           <!--- \\\\\\\Post-->
           <div class="card gedf-card">
@@ -138,25 +141,28 @@
           </div>
           <br>
           {% endfor %}
+
+
           {% if is_paginated %}
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="{% relative_url 1 'page' request.GET.urlencode %}">First</a></li>
+                        <li class="page-item"><a class="page-link" href="{% relative_url page_obj.previous_page_number 'page' request.GET.urlencode %}">Previous</a></li>
                     {% endif %}
 
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %} <!-- loop the pages for num as current page-->
-                        <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        <li class="page-item active"><a class="page-link" href="{% relative_url  num  'page' request.GET.urlencode %}">{{ num }}</a></li>
                         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{% relative_url  num  'page' request.GET.urlencode %}">{{ num }}</a></li>
                         {% endif %}
                     {% endfor %}
 
                     {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+                        <li class="page-item"><a class="page-link" href="{% relative_url page_obj.next_page_number 'page' request.GET.urlencode %}">Next</a></li>
+                       
+                        <li class="page-item"><a class="page-link" href="{% relative_url page_obj.paginator.num_pages 'page' request.GET.urlencode %}">Last</a></li>
                     {% endif %}
                     </ul>
                 </nav>

@@ -13,66 +13,66 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db.models import Exists, OuterRef, Q
-from .filters import PostFilter
+from .filters import PostFilter 
 from datetime import datetime, timedelta, date
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-
+from django_filters.views import FilterView
 
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
 # class based views handle backend logic using generic views and inherit from mixins
 
-#home page
-'''
-def homepage(request, *args, **kwargs):
-     # render in the 'posts' with all the objects as post, to call it on the template
-     context = {
-          'posts': Post.objects.all() # calling all objects from the Post model
-     }
-     return render(request,
-                  'main/home.html',
-                  context)
-'''
-'''
-def search_filter_view(request):
-     posts = Post.objects.all()
-     searchFilter = PostFilter(request.GET, queryset=posts)
-     
-     
-     print(searchFilter)
-     return render(request, 'main/search_filter.html', {'searchFilter': searchFilter})
-'''
 
 
 
-class search_filter_view(ListView):
-     model = Post
+
+class search_filter_view(FilterView):
      template_name = 'main/search_filter.html'
+     paginate_by = 2
+     ordering = ['total_upvotes']
+     filterset_class = PostFilter
 
+     
+
+
+     '''
+     def get_context_data(self, **kwargs):
+          context = super().get_context_data(**kwargs)
+          context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset().distinct())
+          return context
+'''
+'''
      def get_form(self):
           form = super(search_filter_view, self).get_form()
           form.fields['date_traded'].widget.attrs.update({'class': 'datepicker'})
           form.fields['tags'].widget.attrs.update({'data-role':'tagsinput'})
           print('worked')
           return form
-
-     def get_context_data(self, **kwargs):
-          context = super().get_context_data(**kwargs)
-          context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
-          return context
+'''
+     
 
 
 
-
-
-
-
-
-
-
-
-
+class search_view(ListView):
+    template_name = 'main/search.html'
+    context_object_name = 'posts'
+    paginate_by = 2
+     # searches through everything using Q import 
+    def get_queryset(self, *args, **kwargs):
+          q = self.request.GET.get('q')
+          order_by = self.request.GET.get('order_by', '-date_traded') #adding parameters to be called on in the template
+          self.posts = Post.objects.filter(
+             Q(ticker__icontains=q) |
+             #Q(user__username__icontains=q) |
+             #Q(content__icontains=q) |
+             Q(tags__name__icontains=q) 
+          ).annotate(
+               upvoted=Exists(Post.upvotes.through.objects.filter( #upvoted is called in the template using if statement
+                    user_id=self.request.user.id,
+                    post_id=OuterRef('pk')
+            ))).order_by(order_by)
+          return self.posts
 
 
 
@@ -111,22 +111,6 @@ class post_update_view(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                return True
           return False
 
-class search_view(TemplateView): # templateview renders a given template, with the context containing parameters captured in the url
-    template_name = 'main/search.html'
-
-     # searches through everything using Q import 
-    def get(self, request, *args, **kwargs):
-        q = request.GET.get('q')
-        self.posts = Post.objects.filter(
-             Q(ticker__icontains=q) |
-             #Q(user__username__icontains=q) |
-             #Q(content__icontains=q) |
-             Q(tags__name__icontains=q) 
-          ).distinct()
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(posts=self.posts, **kwargs) # returns the template with the get request data
 
 
 # list of all posts sorted by new
@@ -185,6 +169,7 @@ class top_week(ListView):
      template_name = 'main/home.html'
      context_object_name = 'posts'
      paginate_by = 5
+
 
      def get_queryset(self):
           one_week_ago = datetime.today() - timedelta(days=7)

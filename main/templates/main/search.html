@@ -1,1 +1,107 @@
-{% extends 'main/home.html' %}
+{% extends 'main/header.html' %}
+{% block head_title %}Home{% endblock head_title %}
+{% block content %}
+{% include "main/includes/messages.html" %}
+
+<div class='row text-center'>
+  <div class='col'>
+    <div>
+        <span class="h3">
+      Trader Feed 
+        </span>
+        
+        
+        <a class="btn btn-secondary dropdown-toggle mb-3 ml-2" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Sort
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href='?q={{ request.GET.q }}&order_by=-date_traded'>New</a> <!-- using the orderby -->
+            <form>
+            <a class="dropdown-item" href='?q={{ request.GET.q }}&order_by=-total_upvotes'>Top</a> 
+            </form>
+        </div>
+    
+
+    </div>
+    
+    
+  </div>
+</div>
+
+
+    {% if user.is_authenticated %}
+    <div class="container gedf-wrapper">
+  <div class="row">
+      <div class="col-md-3">
+          <div class="card">
+              <div class="card-body">
+                  <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ user.profile.image.url  }}" alt=""></div>
+                  <div class="h7"><strong>{{ user.username }}</strong></div>
+                  <div class="h7">{{ user.profile.bio }}</div>
+              </div>
+              <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                      <div class="h6 text-muted">Followers</div>
+                      <div class="h5">{{ user.profile.followers }}</div>
+                  </li>
+                  <li class="list-group-item">
+                      <div class="h6 text-muted">Following</div>
+                      <div class="h5">{{ user.profile.following }}</div>
+                  </li>
+                  <li class="list-group-item">Smallcaps</li>
+              </ul>
+          </div>
+      </div>
+      <div class="col-md-6 gedf-main" >
+          <!--- \\\\\\\Post-->
+          <div class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
+              <div class="card-header">
+                          <a  href="post/create/" style= "color:white ">Share a Trade</a>
+              </div>
+          </div>
+          {% else %}
+          <div class="container gedf-wrapper">
+          <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Please sign in to create posts and view profiles.</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 gedf-main" >
+                <!--- \\\\\\\Post-->
+          {% endif %}
+          <br>
+          {% for post in posts %}
+          {% include "main/includes/post.html" %}
+          {% endfor %}
+         {% include "main/includes/search_pagination.html"%}
+          <!-- Post /////-->
+      </div>
+      <div class="col-md-3">
+          <div class="card gedf-card">
+              <div class="card-body">
+                  <h5 class="card-title">Side bar</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
+                  <p class="card-text">some resources here</p>
+                  <a href="#" class="card-link">links</a>
+                  <a href="#" class="card-link">links</a>
+              </div>
+          </div>
+          <br>
+          <div class="card gedf-card">
+                  <div class="card-body">
+                      <h5 class="card-title">Side bar</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
+                      <p class="card-text">some resources here</p>
+                      <a href="#" class="card-link">links</a>
+                      <a href="#" class="card-link">links</a>
+                  </div>
+              </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}
+
