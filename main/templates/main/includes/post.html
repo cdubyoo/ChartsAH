@@ -13,13 +13,13 @@
                                 <a class="mr-2" style="color:inherit" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
                               </div>
                               <div class="h7">
-                                <a href="{% url 'main:post-detail' post.id %}" class="btn btn-outline-dark btn-sm" >{{ post.ticker | upper }}</a>
+                                <a href="{% url 'main:search' %}?q={{post.ticker}}" class="btn btn-outline-dark btn-sm" >{{ post.ticker | upper }}</a>
                                 <span class="text-muted">
                                 from {{ post.date_posted| naturaltime }}
                                 </span>
                                 <br>
                                 {% for tag in post.tags.all %}
-                                 <span class="badge badge-secondary mt-1" > {{ tag.name }} </span>
+                                 <a href="{% url 'main:search' %}?q={{tag.name}}" class="badge badge-secondary mt-1" > {{ tag.name }} </a>
                                 {% endfor %}
                               </div>
                           </div>
