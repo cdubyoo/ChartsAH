@@ -10,7 +10,7 @@
                           </div>
                           <div class="ml-2">
                               <div class="h5 mb-1">
-                                <a class="mr-2" style="color:inherit" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
+                                <a class="mr-2" style="color:inherit" href="{% url 'main:user-posts' post.user %}">{{ post.user }}</a>
                               </div>
                               <div class="h7">
                                 <a href="{% url 'main:search' %}?q={{post.ticker}}" class="btn btn-outline-dark btn-sm" >{{ post.ticker | upper }}</a>

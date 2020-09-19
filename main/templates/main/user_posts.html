@@ -29,7 +29,6 @@
                       <div class="h6 text-muted">Following</div>
                       <div class="h5">{{ profile.following }}</div>
                   </li>
-                  <li class="list-group-item">Smallcaps</li>
                   <li class="list-group-item">
                     {% endfor %}
                    {%  if user.username != view.kwargs.username %} 
@@ -45,6 +44,9 @@
                                     Unfollow
                                   {% endif %}
                           </button>
+                          <a class="btn btn-sm btn-outline-primary" href="{% url 'main:message' view.kwargs.username %}">
+                              Message
+                          </a>
                         </div>
                     </form>
                 {% endif %}

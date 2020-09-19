@@ -67,3 +67,20 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content
+
+
+class Conversation(models.Model):
+    participants = models.ManyToManyField(User, related_name='participants')
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name='sender', on_delete=models.CASCADE) #tie follows to one user
+    recipient = models.ForeignKey(User, related_name = 'recipient', on_delete=models.CASCADE)
+    date_sent = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(max_length=500)
+    conversation = models.ForeignKey(Conversation, blank=False, null=True, on_delete=models.CASCADE) #ties conversation table to messages
+    ordering = ["-date_sent"]
+
+    def __str__(self):
+        return f"{self.sender} to {self.recipient} : {self.text}"
+

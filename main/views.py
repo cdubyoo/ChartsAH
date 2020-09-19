@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from .models import Post, Profile, Follow, Comment, Upvote
+from .models import Post, Profile, Follow, Comment, Upvote, Message, Conversation
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
-from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm
+from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm, MessageForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -12,11 +12,12 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Exists, OuterRef, Q, Max
 from .filters import PostFilter 
 from datetime import datetime, timedelta, date
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django_filters.views import FilterView
+from django.views.generic.edit import ModelFormMixin
 
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
@@ -74,6 +75,91 @@ class search_view(ListView):
             ))).order_by(order_by)
           return self.posts
 
+
+class conversation_view(ListView):
+     model = Message
+     template_name = 'main/conversations.html'
+     context_object_name = 'conversations'
+
+
+     def get_context_data(self, *args, **kwargs):
+          current_user = self.request.user
+          context = super().get_context_data(*args, **kwargs)
+          conversations = Message.objects.filter(conversation__participants=current_user).order_by('-date_sent')
+          context['conversations'] = conversations
+          context['messages'] = conversations.values('conversation').annotate(first_msg=Max('conversation__message'))
+
+          return context
+
+         
+          
+
+
+
+from itertools import chain
+
+
+
+class message_view(CreateView):
+     model = Message
+     template_name = 'main/conversations.html'
+     form_class = MessageForm
+    
+
+     def get_context_data(self, *args, **kwargs):
+          # get displayed user context
+          displayed_user = get_object_or_404(User, username=self.kwargs.get('username'))
+          context = super(message_view, self).get_context_data(**kwargs)
+          context['user_profile'] = Profile.objects.filter(user=displayed_user)
+
+          # get convo list context
+          current_user = self.request.user
+          context['conversations'] = Conversation.objects.filter(participants=current_user)
+
+          # get latest message by filtering both users and pulling only the top object with [:1]
+          sent = Message.objects.filter(sender=current_user).filter(recipient=displayed_user).order_by('-date_sent')[:1]
+          received = Message.objects.filter(recipient=current_user).filter(sender=displayed_user).order_by('-date_sent')[:1]
+          messages = list(chain(sent, received))
+          print(messages)
+          context['last_message'] = messages
+          return context
+   
+
+     def post(self, request, *args, **kwargs):
+          displayed_user = get_object_or_404(User, username=self.kwargs.get('username'))
+          current_user = self.request.user
+          form = MessageForm(request.POST)
+          if form.is_valid():
+               conversations = Conversation.objects.filter(participants=displayed_user).filter(participants=current_user) 
+               # ^^ chain filter by first then second user
+               
+               #checking if there is already convo established
+               if conversations.count() == 0:
+                    conversation = Conversation.objects.create()
+                    conversation.participants.add(request.user)
+                    conversation.participants.add(displayed_user)
+                    message = Message(text=request.POST.get('text'),
+                                   sender=current_user, recipient=displayed_user,
+                                   conversation=conversation)
+                    message.save()
+               #if there is already convo, then add message into the convo
+               else:
+                    message = Message(text=request.POST.get('text'), #this is creating Message()
+                                   sender=current_user, recipient=displayed_user,
+                                   conversation=conversations[0]) #conversation[0] would be the first object in the queryset
+                    message.save()
+                    return redirect('main:message', username=displayed_user)
+
+
+
+              
+               
+               
+               
+               
+               
+                    
+          return redirect('main:message', username=displayed_user)
 
 
 
@@ -363,19 +449,6 @@ class follower_view(ListView):
           context = super().get_context_data(**kwargs) 
           context['follow'] = 'followers'
           return context
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

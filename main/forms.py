@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Profile, Comment
+from .models import Post, Profile, Comment, Message
 
 
 # changing the form to include email and bio
@@ -38,6 +38,8 @@ class PostForm(forms.ModelForm):
         return content
 
 
+
+
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
 
@@ -56,3 +58,7 @@ class CommentForm(forms.ModelForm):
         fields = ['content']
 
         
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['text']

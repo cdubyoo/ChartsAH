@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Profile, Follow, Comment, Upvote
+from .models import Post, Profile, Follow, Comment, Upvote, Message, Conversation
 
 from django.db import models
 # Register your models here.
@@ -28,8 +28,19 @@ class CommentAdmin(admin.ModelAdmin):
     class Meta:
         model = Comment
 
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ['sender', 'recipient', 'text', 'date_sent', 'conversation']
+    class Meta:
+        model = Message
+
+
+
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Follow, FollowAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Upvote, UpvoteAdmin)
+admin.site.register(Message, MessageAdmin)
+admin.site.register(Conversation)
