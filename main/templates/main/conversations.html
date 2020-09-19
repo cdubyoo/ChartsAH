@@ -707,9 +707,9 @@ Website: http://emilcarlsson.se/
                         <img src="{{ user.profile.image.url  }}" alt="" />
                         <div class="meta">
                             <p class="name">{{ user.username }}</p>
-                        {% for msg in last_message %}
-                            <p class="preview">{{ msg.text }}</p>
-                        {% endfor %}    
+                       
+                            <p class="preview">{{ convo.last_message }}</p>
+                       
                         </div>
                     </div>
                 </li>

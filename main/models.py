@@ -71,6 +71,7 @@ class Comment(models.Model):
 
 class Conversation(models.Model):
     participants = models.ManyToManyField(User, related_name='participants')
+    last_message = models.TextField(null=True)
 
 
 class Message(models.Model):

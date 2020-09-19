@@ -35,8 +35,6 @@ class MessageAdmin(admin.ModelAdmin):
 
 
 
-
-
 admin.site.register(Post, PostAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Follow, FollowAdmin)

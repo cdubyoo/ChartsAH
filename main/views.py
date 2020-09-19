@@ -116,25 +116,25 @@ class message_view(CreateView):
           current_user = self.request.user
           context['conversations'] = Conversation.objects.filter(participants=current_user)
 
-          # get latest message by filtering both users and pulling only the top object with [:1]
-          sent = Message.objects.filter(sender=current_user).filter(recipient=displayed_user).order_by('-date_sent')[:1]
-          received = Message.objects.filter(recipient=current_user).filter(sender=displayed_user).order_by('-date_sent')[:1]
-          messages = list(chain(sent, received))
-          print(messages)
-          context['last_message'] = messages
+
+
+
           return context
    
 
      def post(self, request, *args, **kwargs):
+          form = MessageForm(request.POST)
+
           displayed_user = get_object_or_404(User, username=self.kwargs.get('username'))
           current_user = self.request.user
-          form = MessageForm(request.POST)
+          
           if form.is_valid():
-               conversations = Conversation.objects.filter(participants=displayed_user).filter(participants=current_user) 
+
+               user_convo = Conversation.objects.filter(participants=displayed_user).filter(participants=current_user) 
                # ^^ chain filter by first then second user
                
-               #checking if there is already convo established
-               if conversations.count() == 0:
+               # checking if there is already convo established, if not create convo
+               if user_convo.count() == 0:
                     conversation = Conversation.objects.create()
                     conversation.participants.add(request.user)
                     conversation.participants.add(displayed_user)
@@ -142,12 +142,22 @@ class message_view(CreateView):
                                    sender=current_user, recipient=displayed_user,
                                    conversation=conversation)
                     message.save()
+                    # set lastmsg with text from post request since there is no convo prior
+                    user_convo.update(last_message=request.POST.get('text'))
+
                #if there is already convo, then add message into the convo
                else:
                     message = Message(text=request.POST.get('text'), #this is creating Message()
                                    sender=current_user, recipient=displayed_user,
-                                   conversation=conversations[0]) #conversation[0] would be the first object in the queryset
+                                   conversation=user_convo[0]) #conversation[0] would be the first object in the queryset
                     message.save()
+
+                    # last message by filtering for top object from 2 users [:1] returns only 1 object
+                    sent = Message.objects.filter(sender=current_user).filter(recipient=displayed_user).order_by('-date_sent')[:1]
+                    received = Message.objects.filter(recipient=current_user).filter(sender=displayed_user).order_by('-date_sent')[:1]
+                    lastmsg = list(chain(sent, received))
+                    user_convo.update(last_message=lastmsg[0].text) #pulling text from object and updating convo
+                    
                     return redirect('main:message', username=displayed_user)
 
 
@@ -473,7 +483,6 @@ def upvote(request):
                post.upvotes.add(request.user)
                post.total_upvotes += 1
                result = post.total_upvotes
-               print('create upvote')
                new_relation.save()  
                post.save()
 
