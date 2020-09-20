@@ -1,0 +1,80 @@
+{% extends "main/header.html" %}
+{% load humanize %}
+
+{% block title %}
+    Notice
+{% endblock title %}
+<style>
+    #notice_link a:link {
+        color: black !important;
+    }
+
+    #notice_link a:visited {
+        color: lightgrey !important;
+    }
+</style>
+{% block content %}
+<div class="container">
+    <div class="row mt-4 ml-4">
+        <a href="{% url 'notice:update' %}" class="btn btn-warning" role="button">Clear All</a>
+    </div>
+    <!-- unread notices -->
+    <div class="row mt-2 ml-4">
+        <ul class="list-group">
+            {% for notice in comment_notices %}
+                {% if notice.verb == 'commented' %}
+                <li class="list-group-item" id="notice_link">
+                    <a href="{% url 'main:post-detail' notice.target.id %}"
+                       target="_blank" style='color:inherit'
+                    >
+                    <span style="color: #5897fb;">
+                        {{ notice.actor }}
+                    </span>
+                        commented on your post: <span style="color: #17A2B8;">{{ notice.target }}</span> 
+                    </a>
+                    <span class="text-muted">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ notice.timestamp|naturaltime }}
+                    </span>
+                    <a href="{% url 'notice:update' %}?notice_id={{ notice.id }}" class="btn-sm btn-danger ml-3" role="button">Delete</a>
+                </li>
+                {%  endif %}
+                {% if notice.verb == 'followed' %}
+                <li class="list-group-item" id="notice_link">
+                    <a href="{% url 'main:user-posts' notice.actor %}"
+                       target="_blank" style='color:inherit'
+                    >
+                    <span style="color: #5897fb;">
+                        {{ notice.actor }}
+                    </span>
+                        has followed you</span> 
+                    </a>
+                    <span class="text-muted text-sm-right">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ notice.timestamp|naturaltime }}
+                    </span>
+                    <a href="{% url 'notice:update' %}?notice_id={{ notice.id }}" class="btn-sm btn-danger ml-3" role="button">Delete</a>
+                </li>
+                {%  endif %}
+                {% if notice.verb == 'messaged' %}
+                <li class="list-group-item" id="notice_link">
+                    <a href="{% url 'main:message' notice.actor %}"
+                       target="_blank" style='color:inherit'
+                    >
+                    <span style="color: #5897fb;">
+                        {{ notice.actor }}
+                    </span>
+                        has <strong>messaged</strong> you</span> 
+                    </a>
+                    <span class="text-muted text-sm-right">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ notice.timestamp|naturaltime }}
+                    </span>
+                    <a href="{% url 'notice:update' %}?notice_id={{ notice.id }}" class="btn-sm btn-danger ml-3" role="button">Delete</a>
+                </li>
+                {%  endif %}
+            {% endfor %}
+            
+        </ul>
+    </div>
+</div>
+
+
+{% endblock content %}

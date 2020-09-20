@@ -20,6 +20,7 @@ from django_filters.views import FilterView
 from django.views.generic.edit import ModelFormMixin
 
 
+
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
 # class based views handle backend logic using generic views and inherit from mixins
@@ -65,7 +66,7 @@ class search_view(ListView):
           order_by = self.request.GET.get('order_by', '-date_traded') #adding parameters to be called on in the template
           self.posts = Post.objects.filter(
              Q(ticker__icontains=q) |
-             #Q(user__username__icontains=q) |
+             Q(user__username__icontains=q) |
              #Q(content__icontains=q) |
              Q(tags__name__icontains=q) 
           ).annotate(
@@ -120,19 +121,12 @@ class message_view(CreateView):
 
           sent_messages = Message.objects.filter(sender=current_user).filter(recipient=displayed_user).order_by('date_sent')
           receieved_messages = Message.objects.filter(recipient=current_user).filter(sender=displayed_user).order_by('date_sent')
-
-
           messages = list(chain(sent_messages, receieved_messages))
 
+          #sort the list by date sent
           messages.sort(key=lambda message: message.date_sent)
 
-          print(messages)
           context['messages'] = messages
-          #context['receieved_messages'] = receieved_messages
-          #context['sent_messages'] = sent_messages
-
-
-
           return context
    
 

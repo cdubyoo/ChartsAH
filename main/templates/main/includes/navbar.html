@@ -5,11 +5,36 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav">
-      <a class="nav-link active" href="/feed">Feed <span class="sr-only">(current)</span></a>
+      <a class="nav-link active" href="/feed">Feed</a>
       {% if user.is_authenticated %}
-      <a class="nav-link" href="/profile">{{user.username|title}}</a>
-      <a class="nav-link" href="/messages">Messages</a>
-      <a class="nav-link" href="/logout">Logout</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {% if unread_count %}
+          <svg viewBox="0 0 8 8"
+               width="8px"
+               height="8px">
+              <circle cx="4"
+                      cy="4"
+                      r="4"
+                      fill="#ff6b6b"
+                      ></circle>
+          </svg>
+         {% endif %}
+      
+         {{ user.username }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="/profile">Profile</a>
+          <a class="dropdown-item" href="{% url 'notice:list' %}">Notifications
+            {% if unread_count %}
+                <span class="badge badge-danger">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+          </a>
+          <a class="dropdown-item" href="/messages">Messages</a>
+          <a class="dropdown-item" href="/logout">Logout</a>
+        </div>
+      </li>
       {% else %}
       <a class="nav-link" href="/login">Login</a>
       <a class="nav-link" href="/register">Register</a>
@@ -29,7 +54,7 @@
     -->
   </span>
   <form class="form-inline" method="GET" action="{% url 'main:search' %}">
-    <input class="form-control mt-2 mr-sm-2" type="search" placeholder="Search by ticker/tags" aria-label="Search" name="q" required>
+    <input class="form-control mt-2 mr-sm-2" type="search" placeholder="Tags/Ticker/Users" aria-label="Search" name="q" required>
     <button class="btn btn-outline-info mt-2 mr-sm-2" type="submit" value="Search">Search</button>
   </form>
 </nav>
