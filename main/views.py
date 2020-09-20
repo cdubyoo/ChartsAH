@@ -78,16 +78,16 @@ class search_view(ListView):
 
 class conversation_view(ListView):
      model = Message
-     template_name = 'main/conversations.html'
+     template_name = 'main/conversations_list.html'
      context_object_name = 'conversations'
 
 
      def get_context_data(self, *args, **kwargs):
           current_user = self.request.user
           context = super().get_context_data(*args, **kwargs)
-          conversations = Message.objects.filter(conversation__participants=current_user).order_by('-date_sent')
+          conversations = Conversation.objects.filter(participants=current_user)
           context['conversations'] = conversations
-          context['messages'] = conversations.values('conversation').annotate(first_msg=Max('conversation__message'))
+          
 
           return context
 
@@ -116,6 +116,20 @@ class message_view(CreateView):
           current_user = self.request.user
           context['conversations'] = Conversation.objects.filter(participants=current_user)
 
+          # get messages
+
+          sent_messages = Message.objects.filter(sender=current_user).filter(recipient=displayed_user).order_by('date_sent')
+          receieved_messages = Message.objects.filter(recipient=current_user).filter(sender=displayed_user).order_by('date_sent')
+
+
+          messages = list(chain(sent_messages, receieved_messages))
+
+          messages.sort(key=lambda message: message.date_sent)
+
+          print(messages)
+          context['messages'] = messages
+          #context['receieved_messages'] = receieved_messages
+          #context['sent_messages'] = sent_messages
 
 
 
@@ -158,17 +172,7 @@ class message_view(CreateView):
                     lastmsg = list(chain(sent, received))
                     user_convo.update(last_message=lastmsg[0].text) #pulling text from object and updating convo
                     
-                    return redirect('main:message', username=displayed_user)
-
-
-
-              
-               
-               
-               
-               
-               
-                    
+                    return redirect('main:message', username=displayed_user)                      
           return redirect('main:message', username=displayed_user)
 
 

@@ -703,6 +703,7 @@ Website: http://emilcarlsson.se/
                 {% for user in convo.participants.all %} 
                 {% if user != request.user %}
                 <li class="contact">
+                  <a href="{% url 'main:message' user %}" style="color:inherit; text-decoration: none;">
                     <div class="wrap">
                         <img src="{{ user.profile.image.url  }}" alt="" />
                         <div class="meta">
@@ -712,10 +713,10 @@ Website: http://emilcarlsson.se/
                        
                         </div>
                     </div>
+                  </a>
                 </li>
                 {%  else %}
                 {%  endif %}  
-
 
                 {%  endfor %}
                 {%  endfor %}
@@ -730,14 +731,19 @@ Website: http://emilcarlsson.se/
 		</div>
 		<div class="messages">
 			<ul>
+        {% for message in messages %}
+        {% if message.sender == request.user %}
 				<li class="sent">
 					<img src="{{ request.user.profile.image.url }}" alt="" />
-					<p>im gay</p>
-                </li>
-                <li class="replies">
-					<img src="{{ profile.image.url }}" alt="" />
-					<p>No, I told him that.</p>
-				</li>
+					<p>{{ message.text }}</p>
+        </li>
+        {% else %}
+         <li class="replies">
+          <img src="{{ profile.image.url }}" alt="" />
+          <p>{{ message.text }}</p>
+        </li>
+        {%  endif %}
+        {% endfor %}
 			</ul>
         </div>
         <form method="POST" >
@@ -749,7 +755,6 @@ Website: http://emilcarlsson.se/
 			</div>
         </div>
         </form>
-    
     </div>
     {% endfor %}
 </div>

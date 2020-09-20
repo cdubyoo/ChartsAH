@@ -80,7 +80,7 @@ class Message(models.Model):
     date_sent = models.DateTimeField(auto_now_add=True)
     text = models.TextField(max_length=500)
     conversation = models.ForeignKey(Conversation, blank=False, null=True, on_delete=models.CASCADE) #ties conversation table to messages
-    ordering = ["-date_sent"]
+    
 
     def __str__(self):
         return f"{self.sender} to {self.recipient} : {self.text}"
