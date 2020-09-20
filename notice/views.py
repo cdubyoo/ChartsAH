@@ -9,7 +9,7 @@ from main.models import Post
 class CommentNoticeListView(LoginRequiredMixin, ListView):
     context_object_name = 'comment_notices'
     template_name = 'notice/list.html'
-    login_url = '/main/login/'
+
 
     # get qs of unread notifications
     def get_queryset(self):
@@ -17,16 +17,13 @@ class CommentNoticeListView(LoginRequiredMixin, ListView):
 
 
 class CommentNoticeUpdateView(View):
-    """更新通知状态"""
-    # 处理 get 请求
     def get(self, request):
-        # 获取未读消息
-        notice_id = request.GET.get('notice_id')
-        # 更新单条通知
-        if notice_id:
-            request.user.notifications.get(id=notice_id).mark_as_read()
+        notice_id = request.GET.get('notice_id') #getting notice_id from html name
+
+        if notice_id: #if html element has notice_id 
+            request.user.notifications.get(id=notice_id).mark_as_read() #delete the notification using its value called in template
             return redirect('notice:list')
-        # 更新全部通知
+
         else:
             request.user.notifications.mark_all_as_read()
             return redirect('notice:list')
