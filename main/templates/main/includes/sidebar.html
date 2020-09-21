@@ -9,11 +9,10 @@
 
                     <a class="btn btn-outline-dark" href="{% url 'main:search' %}?q={{ticker.ticker}}">{{ticker.ticker | upper}}</a>
                 </li> 
-                           
+
                 {% endfor %}
             </ul>
             <hr>
-            <p class="card-text">Useful Links</p>
             <a href="#" class="card-link">About</a>
             <a href="#" class="card-link">Contact Us</a>      
         </div>

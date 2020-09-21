@@ -185,7 +185,7 @@ img{ max-width:100%;}
         <div class="headind_srch">
           <div class="recent_heading">
             <h4>
-              &nbsp;&nbsp; {{ profile.user }}
+              &nbsp;&nbsp; <a style="color:#05728f " href="{% url 'main:user-posts' profile.user %}">{{ profile.user }}</a>
               <div class="chat_img"> <img src="{{ profile.image.url }}" alt=""> </div>
             </h4>
           </div>
