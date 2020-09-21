@@ -2,12 +2,6 @@
 {% block head_title %}Home{% endblock head_title %}
 {% block content %}
 {% include "main/includes/messages.html" %}
-<div class='row text-center'>
-  <div class='col'>
-      <h3>Trades by {{ view.kwargs.username }}</h3> <!-- ({{ page_obj.paginator.count }})-->
-  </div>
-</div>
-
 <div class="container gedf-wrapper">
     
   <div class="row">
@@ -58,76 +52,18 @@
       </div>
     
       <div class="col-md-6 gedf-main" >
+        <div class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
+            <div style="color:white" class="card-header">
+                        Trades by {{ view.kwargs.username }}
+            </div>
+        </div>
           <br>
-{% for post in posts %}
-          <!--- \\\\\\\Post-->
-          <div class="card gedf-card">
-              <div class="card-header">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div class="d-flex justify-content-between align-items-center">
-                          <div class="mr-2">
-                              <img class="thumbnail" width="45" height="45" src="{{ post.user.profile.image.url }}" alt="">
-                          </div>
-                          <div class="ml-2">
-                              <div class="h5 m-0">
-                                <a class="mr-2" href="{% url 'main:user-posts' post.user.username %}">{{ post.user }}</a>
-                              </div>
-                              <div class="h7 text-muted">{{ post.date_posted|date:"F d, Y" }}</div>
-                          </div>
-                      </div>
-                      <div>
-                          <!--div class="dropdown">
-                              <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="fa fa-ellipsis-h"></i>
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
-                                  <div class="h6 dropdown-header">Configuration</div>
-                                  <a class="dropdown-item" href="#">Save</a>
-                                  <a class="dropdown-item" href="#">Hide</a>
-                                  <a class="dropdown-item" href="#">Report</a>
-                              </div>
-                          </div-->
-                      </div>
-                  </div>
-              </div>
-              <div class="card-body">
-                  <a class="card-link" href="#">
-                      <!-- h5 class="card-title"> Title </h5 -->
-                  </a>
-                  <p class="card-text">
-                    {{ post.content }}
-                  </p>
-              </div>
-              <div class="card-footer">
-                  <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-                  <a href="{% url 'main:post-detail' post.id %}" class="card-link"><i class="fa fa-comment"></i> Comment</a>
-              </div>
-          </div>
-          <br>
+          {% for post in posts %}
+          
+          {% include "main/includes/post.html" %}
+          
           {% endfor %}
-          {% if is_paginated %}
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>    
-                    {% endif %}
-
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %} <!-- loop the pages for num as current page-->
-                        <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
-                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
-                    {% endif %}
-                    </ul>
-                </nav>
-          {% endif %}
+          {% include "main/includes/pagination.html"%}
           <!-- Post /////-->
       </div>
       <div class="col-md-3">
