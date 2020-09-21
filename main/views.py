@@ -166,8 +166,8 @@ class message_view(CreateView):
                     lastmsg = list(chain(sent, received))
                     user_convo.update(last_message=lastmsg[0].text) #pulling text from object and updating convo
                     
-                    return redirect('main:message', username=displayed_user)                      
-          return redirect('main:message', username=displayed_user)
+                    return redirect(reverse('main:message', kwargs={'username':displayed_user}) + '#last')                      
+          return redirect(reverse('main:message', kwargs={'username':displayed_user}) + '#last')
 
 
 
