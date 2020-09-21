@@ -5,53 +5,9 @@
 <div class="container gedf-wrapper">
     
   <div class="row">
-      <div class="col-md-3">
-          <div class="card">
-              <div class="card-body">
-                {% for profile in user_profile %}
-                  <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ profile.image.url }}" alt=""></div>
-                  <div class="h7"><strong>{{ profile.user }}</strong></div>
-                  <div class="h7">{{ profile.bio }}</div>
-                  
-              </div>
-              <ul class="list-group list-group-flush">
-                  <li class="list-group-item">
-                      <div class="h6 text-muted">Followers</div>
-                      <div class="h5">{{ profile.followers }}</div>
-                  </li>
-                  <li class="list-group-item">
-                      <div class="h6 text-muted">Following</div>
-                      <div class="h5">{{ profile.following }}</div>
-                  </li>
-                  <li class="list-group-item">
-                    {% endfor %}
-                   {%  if user.username != view.kwargs.username %} 
-                  <form method="POST">
-                      {% csrf_token %}
-                      <div class="form-group">
-                          <button class="btn btn-sm btn-outline-primary"
-                                  name="{% if followable %}follow{% else %}unfollow{% endif %}"  
-                                  type="submit">
-                                  {% if followable %}
-                                    Follow
-                                  {% else %}
-                                    Unfollow
-                                  {% endif %}
-                          </button>
-                          <a class="btn btn-sm btn-outline-primary" href="{% url 'main:message' view.kwargs.username %}">
-                              Message
-                          </a>
-                        </div>
-                    </form>
-                {% endif %}
-                    </li>
-
-                  <!--a class="btn btn-outline-info" href="{% url 'main:user-posts' view.kwargs.username %}">Follow</a>  pass in the url from views and argument which is username-->
-              </ul>
-          </div>
-      </div>
+      
     
-      <div class="col-md-6 gedf-main" >
+      <div class="col-md-7 gedf-main" >
         <div class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
             <div style="color:white" class="card-header">
                         Trades by {{ view.kwargs.username }}
@@ -64,29 +20,63 @@
           
           {% endfor %}
           {% include "main/includes/pagination.html"%}
-          <!-- Post /////-->
+
       </div>
       <div class="col-md-3">
-          <div class="card gedf-card">
-              <div class="card-body">
-                  <h5 class="card-title">Side bar</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
-                  <p class="card-text">some resources here</p>
-                  <a href="#" class="card-link">links</a>
-                  <a href="#" class="card-link">links</a>
+        <div class="card">
+            <div class="card-body">
+              {% for profile in user_profile %}
+                <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ profile.image.url }}" alt=""></div>
+                <div class="h7"><strong>{{ profile.user }}</strong></div>
+                <div class="h7">{{ profile.bio }}</div>
+                
+            </div>
+            <hr>
+            <div class="row full-width pl-2">
+                <div style="text-align: center;" class="col-5">
+                    <div class="h6 text-muted">Following</div>
               </div>
-          </div>
-          <br>
-          <div class="card gedf-card">
-                  <div class="card-body">
-                      <h5 class="card-title">Side bar</h5>
-                      <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
-                      <p class="card-text">some resources here</p>
-                      <a href="#" class="card-link">links</a>
-                      <a href="#" class="card-link">links</a>
-                  </div>
+               <div style="text-align: center;" class="col-5">
+                    <div class="h6 text-muted">Followers</div>
               </div>
-      </div>
+            </div>
+            
+            <div  class="row full-width pl-2">
+                <div style="text-align: center;" class="col-5">
+                    <a style="color:inherit;" class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.following }}</a>
+                </div>
+                    <div style="text-align: center;" class="col-5">
+                        <a style="color:inherit" class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.followers }}</a>
+                    </div>
+            </div>
+            {% endfor %}
+            <hr>
+            <form method="POST">
+                {% csrf_token %}
+                {%  if user.username != view.kwargs.username %} 
+            <div style="text-align: center;"class="row full-width pl-2">
+                <div class="col-5">
+                    <button class="btn btn-sm btn-outline-info"
+                                name="{% if followable %}follow{% else %}unfollow{% endif %}"  
+                                type="submit">
+                                {% if followable %}
+                                  Follow
+                                {% else %}
+                                  Unfollow
+                                {% endif %}
+                        </button>
+                </div>
+                    <div class="col-5">
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'main:message' view.kwargs.username %}">
+                            Message
+                        </a>
+                    </div>
+            </div>
+            </form>
+              {% endif %}         
+
+        </div>
+    </div>
   </div>
 </div>
 {% endblock %}
