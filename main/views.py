@@ -362,9 +362,9 @@ class post_detail_view(DetailView):
 class comment_delete_view(DeleteView):
      model = Comment
      def get_success_url(self):
-    # Assuming there is a ForeignKey from Comment to Post in your model
+          # return to post after deletion
           post = self.object.post 
-          return reverse( 'main:post-detail', kwargs={'pk':post.id})
+          return reverse( 'main:post-detail', kwargs={'pk':post.id}) # pk is argument for url
 
 
 
