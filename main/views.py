@@ -12,12 +12,13 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.db.models import Exists, OuterRef, Q, Max
+from django.db.models import Exists, OuterRef, Q, Max, Count
 from .filters import PostFilter 
 from datetime import datetime, timedelta, date
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django_filters.views import FilterView
 from django.views.generic.edit import ModelFormMixin
+from itertools import chain
 
 
 
@@ -31,37 +32,34 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
 class search_filter_view(FilterView):
      template_name = 'main/search_filter.html'
-     paginate_by = 2
+     paginate_by = 5
      ordering = ['total_upvotes']
      filterset_class = PostFilter
-
      
-
-
-     '''
-     def get_context_data(self, **kwargs):
+     def get_context_data(self, *args, **kwargs):
           context = super().get_context_data(**kwargs)
-          context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset().distinct())
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
           return context
-'''
-'''
-     def get_form(self):
-          form = super(search_filter_view, self).get_form()
-          form.fields['date_traded'].widget.attrs.update({'class': 'datepicker'})
-          form.fields['tags'].widget.attrs.update({'data-role':'tagsinput'})
-          print('worked')
-          return form
-'''
-     
-
 
 
 class search_view(ListView):
-    template_name = 'main/search.html'
-    context_object_name = 'posts'
-    paginate_by = 2
+     template_name = 'main/search.html'
+     context_object_name = 'posts'
+     paginate_by = 2
+
+
+
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context
+
      # searches through everything using Q import 
-    def get_queryset(self, *args, **kwargs):
+     def get_queryset(self, *args, **kwargs):
           q = self.request.GET.get('q')
           order_by = self.request.GET.get('order_by', '-date_traded') #adding parameters to be called on in the template
           self.posts = Post.objects.filter(
@@ -76,6 +74,7 @@ class search_view(ListView):
             ))).order_by(order_by)
           return self.posts
 
+    
 
 class conversation_view(ListView):
      model = Message
@@ -97,7 +96,7 @@ class conversation_view(ListView):
 
 
 
-from itertools import chain
+
 
 
 
@@ -224,6 +223,13 @@ class post_list_view(ListView):
                     user_id=self.request.user.id,
                     post_id=OuterRef('pk')
             )))
+
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context
  
 
 # sort by all time top
@@ -241,6 +247,12 @@ class top_all(ListView):
                     user_id=self.request.user.id,
                     post_id=OuterRef('pk')
             )))
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context
 
 
 class top_day(ListView):     
@@ -256,6 +268,13 @@ class top_day(ListView):
                upvoted=Exists(Post.upvotes.through.objects.filter( 
                user_id=self.request.user.id,
                post_id=OuterRef('pk')))).order_by('-total_upvotes')
+
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context
 
 
 class top_week(ListView):     
@@ -273,6 +292,12 @@ class top_week(ListView):
                user_id=self.request.user.id,
                post_id=OuterRef('pk')))).order_by('-total_upvotes')
 
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context
 
 class top_month(ListView):     
      model = Post
@@ -286,7 +311,14 @@ class top_month(ListView):
                # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
                upvoted=Exists(Post.upvotes.through.objects.filter( 
                user_id=self.request.user.id,
-               post_id=OuterRef('pk')))).order_by('-total_upvotes')         
+               post_id=OuterRef('pk')))).order_by('-total_upvotes')   
+
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context      
 
 class top_year(ListView):     
      model = Post
@@ -301,7 +333,14 @@ class top_year(ListView):
                # ^^ using the '__in' syntax to make query to ask for posts with user = follows, which is array of users who is followed by current user
                upvoted=Exists(Post.upvotes.through.objects.filter( 
                user_id=self.request.user.id,
-               post_id=OuterRef('pk')))).order_by('-total_upvotes')         
+               post_id=OuterRef('pk')))).order_by('-total_upvotes')        
+
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context 
 
 
 
@@ -314,7 +353,7 @@ class feed_list_view(LoginRequiredMixin, ListView):
      template_name = 'main/home.html'
      context_object_name = 'posts' # this is called from the html as 'for post in posts'
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
-     paginate_by = 2 #sets pagination per page
+     paginate_by = 5 #sets pagination per page
 
      
      def get_queryset(self): #function to return a queryset(list of items) 
@@ -329,6 +368,13 @@ class feed_list_view(LoginRequiredMixin, ListView):
                # ^^ using Exists() subquery to check if table exists between user, post, and upvotes. to show if user has already upvoted posts     
                user_id=self.request.user.id,
                post_id=OuterRef('pk')))).order_by('-date_posted') 
+
+     def get_context_data(self, *args, **kwargs):
+          context = super().get_context_data(**kwargs)
+          today = date.today()
+          top_tickers = Post.objects.filter(date_traded__gte=today).values('ticker').annotate(c=Count('ticker')).order_by('-c')
+          context['top_tickers'] = top_tickers
+          return context
 
 
 #individual post view
@@ -464,7 +510,6 @@ class follower_view(ListView):
           context = super().get_context_data(**kwargs) 
           context['follow'] = 'followers'
           return context
-
 
 
 

@@ -47,16 +47,25 @@
                   <div class="h7"><strong>{{ user.username }}</strong></div>
                   <div class="h7">{{ user.profile.bio }}</div>
               </div>
-              <ul class="list-group list-group-flush">
-                  <li class="list-group-item">
-                      <div class="h6 text-muted">Followers</div>
-                      <a class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.followers }}</a>
-                  </li>
-                  <li class="list-group-item">
+              <hr>
+              <div class="row full-width pl-2">
+                  <div style="text-align: center;" class="col-5">
                       <div class="h6 text-muted">Following</div>
-                      <a class="h5" href="{% url 'main:following' user.username %}">{{ user.profile.following }}</a>
-                  </li>
-                  </ul>
+                </div>
+                 <div style="text-align: center;" class="col-5">
+                      <div class="h6 text-muted">Followers</div>
+                </div>
+              </div>
+              
+              <div  class="row full-width pl-2">
+                  <div style="text-align: center;" class="col-5">
+                      <a style="color:inherit;" class="h5" href="{% url 'main:following' user.username %}">{{ user.profile.following }}</a>
+                  </div>
+                      <div style="text-align: center;" class="col-5">
+                          <a style="color:inherit" class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.followers }}</a>
+                      </div>
+              </div>
+              <br>
           </div>
       </div>
       <div class="col-md-6 gedf-main" >
@@ -89,27 +98,12 @@
           
           <!-- Post /////-->
       </div>
-      <div class="col-md-3">
-          <div class="card gedf-card">
-              <div class="card-body">
-                  <h5 class="card-title">Side bar</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
-                  <p class="card-text">some resources here</p>
-                  <a href="#" class="card-link">links</a>
-                  <a href="#" class="card-link">links</a>
-              </div>
-          </div>
-          <br>
-          <div class="card gedf-card">
-                  <div class="card-body">
-                      <h5 class="card-title">Side bar</h5>
-                      <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
-                      <p class="card-text">some resources here</p>
-                      <a href="#" class="card-link">links</a>
-                      <a href="#" class="card-link">links</a>
-                  </div>
-              </div>
-      </div>
+      <!-- Sidebar -->
+
+        {% include "main/includes/sidebar.html"%}
+
+
+
   </div>
 </div>
 

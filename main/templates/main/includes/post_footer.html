@@ -47,7 +47,7 @@
         </a>
         
         {% if post.user == user %}
-        <a href="{% url 'main:post-update' post.id %}" class="card-link">Edit</a>
+        <a href="{% url 'main:post-update' post.id %}" class="card-link" style="color:inherit">Edit</a>
         <a href="{% url 'main:post-delete' post.id %}" class="card-link" style="color:red">Delete</a>
         {% endif %}
         </form>

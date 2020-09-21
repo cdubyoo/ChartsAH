@@ -7,7 +7,7 @@
   <div class='col'>
     <div>
         <span class="h3">
-      Trader Feed 
+      Search Results
         </span>
         
         
@@ -29,36 +29,39 @@
 </div>
 
 
-    {% if user.is_authenticated %}
-    <div class="container gedf-wrapper">
-  <div class="row">
-      <div class="col-md-3">
-          <div class="card">
-              <div class="card-body">
-                  <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ user.profile.image.url  }}" alt=""></div>
-                  <div class="h7"><strong>{{ user.username }}</strong></div>
-                  <div class="h7">{{ user.profile.bio }}</div>
-              </div>
-              <ul class="list-group list-group-flush">
-                  <li class="list-group-item">
-                      <div class="h6 text-muted">Followers</div>
-                      <div class="h5">{{ user.profile.followers }}</div>
-                  </li>
-                  <li class="list-group-item">
-                      <div class="h6 text-muted">Following</div>
-                      <div class="h5">{{ user.profile.following }}</div>
-                  </li>
-                  <li class="list-group-item">Smallcaps</li>
-              </ul>
+{% if user.is_authenticated %}
+<div class="container gedf-wrapper">
+<div class="row">
+  <div class="col-md-3">
+      <div class="card">
+          <div class="card-body">
+              <div class="h5"><img class="thumbnail" width="90" height="90" src="{{ user.profile.image.url  }}" alt=""></div>
+              <div class="h7"><strong>{{ user.username }}</strong></div>
+              <div class="h7">{{ user.profile.bio }}</div>
           </div>
+          <hr>
+          <div class="row full-width pl-2">
+              <div style="text-align: center;" class="col-5">
+                  <div class="h6 text-muted">Following</div>
+            </div>
+             <div style="text-align: center;" class="col-5">
+                  <div class="h6 text-muted">Followers</div>
+            </div>
+          </div>
+          
+          <div  class="row full-width pl-2">
+              <div style="text-align: center;" class="col-5">
+                  <a style="color:inherit;" class="h5" href="{% url 'main:following' user.username %}">{{ user.profile.following }}</a>
+              </div>
+                  <div style="text-align: center;" class="col-5">
+                      <a style="color:inherit" class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.followers }}</a>
+                  </div>
+          </div>
+          <br>
       </div>
+  </div>
       <div class="col-md-6 gedf-main" >
           <!--- \\\\\\\Post-->
-          <div class="card gedf-card navbar navbar-expand-lg navbar-dark bg-dark" >
-              <div class="card-header">
-                          <a  href="post/create/" style= "color:white ">Share a Trade</a>
-              </div>
-          </div>
           {% else %}
           <div class="container gedf-wrapper">
           <div class="row">
@@ -79,27 +82,7 @@
          {% include "main/includes/search_pagination.html"%}
           <!-- Post /////-->
       </div>
-      <div class="col-md-3">
-          <div class="card gedf-card">
-              <div class="card-body">
-                  <h5 class="card-title">Side bar</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
-                  <p class="card-text">some resources here</p>
-                  <a href="#" class="card-link">links</a>
-                  <a href="#" class="card-link">links</a>
-              </div>
-          </div>
-          <br>
-          <div class="card gedf-card">
-                  <div class="card-body">
-                      <h5 class="card-title">Side bar</h5>
-                      <h6 class="card-subtitle mb-2 text-muted">some shit here</h6>
-                      <p class="card-text">some resources here</p>
-                      <a href="#" class="card-link">links</a>
-                      <a href="#" class="card-link">links</a>
-                  </div>
-              </div>
-      </div>
+      {% include "main/includes/sidebar.html"%}
   </div>
 </div>
 
