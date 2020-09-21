@@ -3,6 +3,7 @@
 {% block content %}
 {% include "main/includes/messages.html" %}
 
+
 <div class='row text-center'>
   <div class='col'>
     <div>
@@ -55,8 +56,7 @@
                       <div class="h6 text-muted">Following</div>
                       <a class="h5" href="{% url 'main:following' user.username %}">{{ user.profile.following }}</a>
                   </li>
-                  <li class="list-group-item">Smallcaps</li>
-              </ul>
+                  </ul>
           </div>
       </div>
       <div class="col-md-6 gedf-main" >

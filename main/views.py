@@ -357,8 +357,15 @@ class post_detail_view(DetailView):
           create_comment = Comment(content=request.POST.get('content'),
                                    user=self.request.user, post=self.get_object())
           create_comment.save()
-     
           return self.get(self, request, *args, **kwargs)
+
+class comment_delete_view(DeleteView):
+     model = Comment
+     def get_success_url(self):
+    # Assuming there is a ForeignKey from Comment to Post in your model
+          post = self.object.post 
+          return reverse( 'main:post-detail', kwargs={'pk':post.id})
+
 
 
 class post_delete_view(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
