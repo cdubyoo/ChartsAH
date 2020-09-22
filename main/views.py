@@ -4,13 +4,13 @@ from .models import Post, Profile, Follow, Comment, Upvote, Message, Conversatio
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout, authenticate, login
 from django.contrib import messages
-from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm, MessageForm
+from .forms import NewUserForm, PostForm, UserUpdateForm, ProfileUpdateForm, CommentForm, MessageForm, ContactForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db.models import Exists, OuterRef, Q, Max, Count
 from .filters import PostFilter 
@@ -19,6 +19,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django_filters.views import FilterView
 from django.views.generic.edit import ModelFormMixin
 from itertools import chain
+from django.core.mail import send_mail
 
 
 
@@ -641,7 +642,21 @@ def profile(request):
      return render(request, 'main/profile.html', context)
 
 
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # send email code goes here
+            sender_name = form.cleaned_data['name']
+            sender_email = form.cleaned_data['email']
 
+            message = "{0} has sent you a new message:\n\n{1}".format(sender_name, form.cleaned_data['message'])
+            send_mail('New Enquiry', message, sender_email, ['enquiry@exampleco.com'])
+            return HttpResponse('Thanks for contacting us! We will get back to you shortly.')
+    else:
+        form = ContactForm()
+
+    return render(request, 'main/contact.html', {'form': form})
 
 
 
