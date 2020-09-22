@@ -379,7 +379,7 @@ class feed_list_view(LoginRequiredMixin, ListView):
 
 
 #individual post view
-class post_detail_view(DetailView):
+class post_detail_view(LoginRequiredMixin, DetailView):
      model = Post
      template_name = 'main/post_detail.html'
      context_object_name = 'post'
@@ -405,6 +405,7 @@ class post_detail_view(DetailView):
                                    user=self.request.user, post=self.get_object())
           create_comment.save()
           return self.get(self, request, *args, **kwargs)
+
 
 class comment_delete_view(DeleteView):
      model = Comment
