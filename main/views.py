@@ -26,7 +26,8 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 # function based views handle the logic for the route and render the template.
 # class based views handle backend logic using generic views and inherit from mixins
 
-
+class about_view(TemplateView):
+     template_name= 'main/about.html'
 
 
 
@@ -416,7 +417,7 @@ class comment_delete_view(DeleteView):
 
 class post_delete_view(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
      model = Post
-     success_url = '/' #redirect to home if delete success
+     success_url = '/home' #redirect to home if delete success
      def test_func(self):
           post = self.get_object() # get the post 
           if self.request.user == post.user:
@@ -579,7 +580,7 @@ def login_request(request):
                if user is not None:
                     login(request, user)
                     messages.info(request, f"Welcome, {username}.")
-                    return redirect('/')
+                    return redirect('/home')
                else:
                     messages.error(request, "Invalid username or password.")
           else:

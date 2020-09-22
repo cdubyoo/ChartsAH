@@ -2,7 +2,7 @@ from django.urls import path #url()
 from . import views
 from .views import (post_list_view, post_detail_view, post_create_view, post_update_view, post_delete_view, 
 user_posts, following_view, follower_view, feed_list_view, search_view, search_filter_view, comment_delete_view,
-                    top_all, top_week, top_day, top_month, top_year, conversation_view, message_view)
+top_all, top_week, top_day, top_month, top_year, conversation_view, message_view, about_view)
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -13,7 +13,8 @@ app_name = 'main'
 # views. = function based views
 # as_view() = class based views
 urlpatterns = [
-    path("", post_list_view.as_view(), name="home"),
+    path("home/", post_list_view.as_view(), name="home"),
+    path("", about_view.as_view(), name="about"),
     path("feed/", feed_list_view.as_view(), name="feed"), #follow feed
     path("register/", views.register, name="register"),
     path("logout/", views.logout_request, name="logout"),

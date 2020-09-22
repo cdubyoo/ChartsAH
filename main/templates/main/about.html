@@ -1,0 +1,117 @@
+
+    <!-- Bootstrap CSS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+
+{% include "main/includes/navbar.html" %}
+
+
+<div class="bg-light">
+    <div class="container py-5">
+      <div class="row h-100 align-items-center py-5">
+        <div class="col-lg-6">
+          <h1 class="display-4">About us</h1>
+          <p class="lead text-muted mb-0">Charts-AH stands for Charts AfterHours. The site was created with the idea to let traders share their trades. 
+              The main purpose is to learn from each other through our charts combined with trade analysis.
+          </p>
+          <p class="lead text-muted"><a href="home" class="text-muted"> 
+            <u>Check it out</u></a>
+        </p>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block"><img src="https://chartsahabout.s3-us-west-1.amazonaws.com/bullbearchart.jpg" alt="" class="img-fluid"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white py-5">
+    <div class="container py-5">
+      <div class="row align-items-center mb-5">
+        <div class="col-lg-6 order-2 order-lg-1"><i class="fa fa-bar-chart fa-2x mb-3 text-primary"></i>
+          <h2 class="font-weight-light">Sharing trades with charts</h2>
+          <p class="text-muted mb-4">Users are encouraged to post pictures of their trades with executions and a description of how and why they took the trade.</p>
+        </div>
+        <div class="col-lg-5 px-5 mx-auto order-1 order-lg-2"><img src="https://chartsahabout.s3-us-west-1.amazonaws.com/htbxtrade.png" alt="" class="img-fluid mb-4 mb-lg-0"></div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-lg-5 px-5 mx-auto"><img src="https://chartsahabout.s3-us-west-1.amazonaws.com/stonks.jpg" alt="" class="img-fluid mb-4 mb-lg-0"></div>
+        <div class="col-lg-6"><i class="fa fa-leaf fa-2x mb-3 text-primary"></i>
+          <h2 class="font-weight-light">And Remember!</h2>
+          <p class="font-italic text-muted mb-4">Stocks only go up!</p>
+          <p class="lead text-muted"><a href="#top" class="text-muted"> 
+            <u>Back to top</u></a>
+        </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style>
+
+
+.social-link {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-radius: 50%;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.social-link:hover,
+.social-link:focus {
+  background: #ddd;
+  text-decoration: none;
+  color: #555;
+}
+</style>
+
+
+  <div class="bg-light py-5">
+    <div class="container py-5">
+      <div class="row mb-4">
+        <div class="col-lg-5">
+          <h2 class="display-4 font-weight-light">The Team</h2>
+          <p class="font-italic text-muted"></p>
+        </div>
+      </div>
+  
+      <div class="row text-center">
+        <!-- Team item-->
+        <div class="col-xl-3 col-sm-6 mb-5">
+          <div class="bg-white rounded shadow-sm py-5 px-4"><img src="https://chartsahabout.s3-us-west-1.amazonaws.com/chunghead.jpg" alt="" width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+            <h5 class="mb-0">Chung Wong</h5><span class="small text-uppercase text-muted">Creator</span>
+            <ul class="social mb-0 list-inline mt-3">
+              <li class="list-inline-item"><a href="https://github.com/cdubyoo" target="_blank" class="social-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302
+                     3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729
+                      1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 
+                      0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138
+                       3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 
+                       5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              </a>
+            </li>
+
+            </ul>
+          </div>
+        </div>
+        <!-- End-->
+  
+        
+  
+      </div>
+    </div>
+  </div>
+  
+  
+  <footer class="bg-light pb-5">
+    <div class="container text-center">
+      <p class="font-italic text-muted mb-0">&copy; Copyrights Charts-AH All rights reserved.</p>
+    </div>
+  </footer>
