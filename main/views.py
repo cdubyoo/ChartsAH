@@ -174,6 +174,12 @@ class message_view(CreateView):
 # creating posts
 class post_create_view(LoginRequiredMixin, CreateView):
 
+     # override dispatch method to display messages with mixins
+     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(request, "Must be logged in to create post.", self.permission_denied_message) # added this line
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
      
      model = Post
      fields = ['content', 'image', 'ticker', 'date_traded', 'tags']
@@ -356,7 +362,13 @@ class feed_list_view(LoginRequiredMixin, ListView):
      ordering = ['-date_posted'] # minus to reverse the date posted, so newer posts show up on top
      paginate_by = 5 #sets pagination per page
 
-     
+     # override dispatch method to display messages with mixins
+     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(request, "Must be logged in to view custom feed.", self.permission_denied_message) # added this line
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
+
      def get_queryset(self): #function to return a queryset(list of items) 
           user = self.request.user #specify user as current user who is sending request
           qs = Follow.objects.filter(user=user) #query set filtering by current user's follow table
@@ -383,6 +395,13 @@ class post_detail_view(LoginRequiredMixin, DetailView):
      model = Post
      template_name = 'main/post_detail.html'
      context_object_name = 'post'
+
+     # override dispatch method to display messages with mixins
+     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(request, "Must be logged in to view post in detail.", self.permission_denied_message) # added this line
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
 
      # render upvote status
      def get_queryset(self, *args, **kwargs):
@@ -432,6 +451,14 @@ class user_posts(LoginRequiredMixin, ListView):
      template_name = 'main/user_posts.html'
      context_object_name = 'posts'
      paginate_by = 5 #sets pagination per page
+
+
+     # override dispatch method to display messages with mixins
+     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(request, "Must be signed in to view user profiles.", self.permission_denied_message) # added this line
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
 
      def displayed_user(self):
         return get_object_or_404(User, username=self.kwargs.get('username')) # user on display
