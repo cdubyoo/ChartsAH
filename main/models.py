@@ -10,7 +10,7 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) #many to one relationship where many posts can be tied to one user
     content = models.TextField(blank=True, null=True) 
     date_traded = models.DateTimeField(verbose_name= ('Date Traded'))
-    image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change blank = false later
+    image = models.ImageField(upload_to='trade_images', blank=True, null=True) #change blank = false later to be required
     upvotes = models.ManyToManyField(User, blank=True, related_name='upvotes')
     total_upvotes = models.IntegerField(default='0')
     ticker = models.CharField(blank=False, null=True, max_length=5)
