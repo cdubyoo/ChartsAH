@@ -43,10 +43,10 @@
             
             <div  class="row full-width pl-2">
                 <div style="text-align: center;" class="col-5">
-                    <a style="color:inherit;" class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.following }}</a>
+                    <a style="color:inherit;" class="h5" href="{% url 'main:following' profile.user %}">{{ profile.following }}</a>
                 </div>
                     <div style="text-align: center;" class="col-5">
-                        <a style="color:inherit" class="h5" href="{% url 'main:followers' user.username %}">{{ user.profile.followers }}</a>
+                        <a style="color:inherit" class="h5" href="{% url 'main:followers' profile.user %}">{{ profile.followers }}</a>
                     </div>
             </div>
             {% endfor %}

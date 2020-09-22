@@ -40,5 +40,7 @@ urlpatterns = [
     path("messages/", conversation_view.as_view(), name="conversation"),
     path("messages/<str:username>/", message_view.as_view(), name="message"),
     path("contact/", views.contact, name="contact"),
+    path("contact/done/", views.contact_done, name="contact-done"),
+
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

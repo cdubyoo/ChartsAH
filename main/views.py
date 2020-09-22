@@ -19,7 +19,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django_filters.views import FilterView
 from django.views.generic.edit import ModelFormMixin
 from itertools import chain
-from django.core.mail import send_mail
+from django.core.mail import send_mail, BadHeaderError
 
 
 
@@ -646,13 +646,14 @@ def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # send email code goes here
+            
             sender_name = form.cleaned_data['name']
             sender_email = form.cleaned_data['email']
-
-            message = "{0} has sent you a new message:\n\n{1}".format(sender_name, form.cleaned_data['message'])
-            send_mail('New Enquiry', message, sender_email, ['enquiry@exampleco.com'])
-            return HttpResponse('Thanks for contacting us! We will get back to you shortly.')
+            subject = form.cleaned_data['subject']
+            # storing message as a tuple with input values from form, then calling it onto the email
+            message = "{0} from {1} has sent you a new message:\n\n{2}".format(sender_name, sender_email, form.cleaned_data['message'])
+            send_mail(subject, message, sender_email, ['chartsah@gmail.com'])
+            return redirect('main:contact-done')
     else:
         form = ContactForm()
 
@@ -660,3 +661,5 @@ def contact(request):
 
 
 
+def contact_done(request):
+    return render(request, 'main/contact_done.html')
