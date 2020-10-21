@@ -1,5 +1,7 @@
 # ChartsAH
 
+Live on : https://chartsah.herokuapp.com/
+
 Site built using django framework
 
 - landing page
