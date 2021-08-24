@@ -2,7 +2,7 @@
 
 Live on : https://chartsah.herokuapp.com/
 
-Site built using django framework
+Site built using Django framework
 
 - Landing Page
   - short description of site purpose
